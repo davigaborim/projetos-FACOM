@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Materiais de Apoio - LSCAD</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header class="navbar">
+        <div class="navbar-brand"><a href="/">LSCAD UFMS</a></div>
+        <div class="navbar-user-area">
+            <button onclick="window.location.href='/'" class="btn-nav">Voltar ao Início</button>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="category-section">
+            <h2 id="titulo-simulador">Materiais de Apoio</h2>
+            <p>Acesse manuais e artigos técnicos relacionados ao simulador selecionado.</p>
+
+            <h3 class="section-title">Manual do Simulador</h3>
+            <div id="mostra-manual"></div>
+
+            <h3 class="section-title">Artigos Relacionados</h3>
+            <div id="lista-artigos" class="artigos-container"></div>
+        </section>
+    </main>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const id = params.get("id");
+        const container = document.getElementById("lista-artigos");
+        const manualContainer = document.getElementById("mostra-manual");
+
+        if (!id) {
+            container.innerHTML = "<p class='no-data-state'>ID do simulador não informado.</p>";
+        } else {
+            fetch(`/artigos/simuladores/${id}/artigos`)
+                .then(res => res.json())
+                .then(data => {
+                    if (!data.success) {
+                        container.innerHTML = "<p class='no-data-state'>Erro ao carregar artigos.</p>";
+                        return;
+                    }
+
+                    const simulador = data.simulador;
+                    document.getElementById("titulo-simulador").textContent = `Materiais: ${simulador.name || 'Simulador'}`;
+
+                    // Renderiza o Manual
+                    if (simulador.manual) {
+                        manualContainer.innerHTML = `
+                            <div class="artigo-item">
+                                <div style="flex-grow: 1;">
+                                    <h4 style="margin: 0 0 5px 0; color: var(--primary-color);">Manual de Instruções</h4>
+                                    <p style="margin: 0; font-size: 0.95rem;">Guia completo de utilização e instalação.</p>
+                                </div>
+                                <a href="/arquivos_simuladores/${simulador.manual}" target="_blank" class="btn btn-primary" style="width: auto; margin-bottom: 0;">Download PDF</a>
+                            </div>
+                        `;
+                    } else {
+                        manualContainer.innerHTML = "<p class='no-data-state' style='padding: 20px 0;'>Este simulador não possui manual cadastrado.</p>";
+                    }
+
+                    // Renderiza os Artigos
+                    if (!simulador.articles || simulador.articles.length === 0) {
+                        container.innerHTML = "<p class='no-data-state' style='padding: 20px 0;'>Este simulador não possui artigos adicionais.</p>";
+                        return;
+                    }
+
+                    simulador.articles.forEach((article, index) => {
+                        const div = document.createElement("div");
+                        div.className = "artigo-item";
+                        
+                        const fileName = typeof article === 'string' ? article : article.file;
+
+                        // Removida a lógica e a tag da imagem de thumbnail. O flex-grow cuidará do alinhamento.
+                        div.innerHTML = `
+                            <div style="flex-grow: 1;">
+                                <h4 style="margin: 0 0 5px 0; color: var(--text-color);">Artigo Técnico #${index + 1}</h4>
+                                <p style="margin: 0; font-size: 0.95rem; color: var(--text-muted);">Documentação científica e técnica de apoio.</p>
+                            </div>
+                            <a href="/arquivos_simuladores/${fileName}" target="_blank" class="btn btn-secondary" style="width: auto; margin-bottom: 0;">Visualizar</a>
+                        `;
+                        container.appendChild(div);
+                    });
+                })
+                .catch(err => {
+                    console.error(err);
+                    container.innerHTML = "<p class='no-data-state'>Erro na requisição dos dados.</p>";
+                });
+        }
+    </script>
+</body>
+</html>

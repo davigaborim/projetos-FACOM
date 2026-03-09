@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plataforma LSCAD - UFMS</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header class="navbar">
+        <div class="navbar-brand"><a href="#">LSCAD UFMS</a></div>
+        
+        <div class="navbar-user-area">
+            <span id="userWelcome" class="user-welcome"></span>
+            
+            <div id="adminControls" style="display:none;">
+                <button onclick="window.location.href='/manager.html'" class="btn-nav btn-admin">Admins</button>
+            </div>
+
+            <button id="btnLogout" class="btn-nav">Entrar</button>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="category-section">
+            <h2>Softwares e Ferramentas</h2>
+            <p>Explore as ferramentas, simuladores e ambientes de desenvolvimento utilizados pelo laboratório.</p>
+
+            <div id="loading" class="loading-state">Carregando simuladores...</div>
+            
+            <div id="simuladores-container" class="card-grid"></div>
+        </section>
+    </main>
+
+    <div id="modals-container"></div>
+
+    <div id="fabContainer" class="fab-container" style="display: none;">
+        <a href="/upload.html" class="fab-main" title="Adicionar Novo">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+        </a>
+        
+        <a href="/delete.html" class="fab-mini fab-delete" data-tooltip="Excluir Simulador">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+        </a>
+        
+        <a href="/editar.html" class="fab-mini fab-edit" data-tooltip="Editar Simulador">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+        </a>
+    </div>
+
+    <script>
+        const token = localStorage.getItem("admToken");
+
+        function getUserNameFromToken() {
+            if (!token) return null;
+            try {
+                const payload = JSON.parse(atob(token.split('.')[1]));
+                return payload.name || payload.username || null;
+            } catch { return null; }
+        }
+
+        const userName = getUserNameFromToken();
+        const welcomeSpan = document.getElementById("userWelcome");
+        const adminControls = document.getElementById("adminControls");
+        const fabContainer = document.getElementById("fabContainer");
+        const btnLogout = document.getElementById("btnLogout");
+
+        if (token && userName) {
+            welcomeSpan.textContent = `Olá, ${userName}`;
+            adminControls.style.display = 'inline-flex';
+            fabContainer.style.display = 'flex'; 
+            btnLogout.textContent = "Sair";
+            btnLogout.onclick = logout;
+        } else {
+            welcomeSpan.textContent = "";
+            adminControls.style.display = 'none';
+            fabContainer.style.display = 'none';
+            btnLogout.textContent = "Entrar";
+            btnLogout.onclick = () => window.location.href = "/login.html";
+        }
+
+        function logout() {
+            if (confirm("Deseja realmente sair?")) {
+                localStorage.removeItem("admToken"); 
+                window.location.href = "/";
+            }
+        }
+
+        window.simImages = {}; 
+
+        window.nextImage = function(id, event, isModal = false) {
+            if(event) event.stopPropagation();
+            const selector = isModal ? `modal-carousel-img-${id}` : `carousel-img-${id}`;
+            const imgEl = document.getElementById(selector);
+            const images = window.simImages[id];
+            if (!images || images.length === 0 || !imgEl) return;
+
+            let index = parseInt(imgEl.dataset.index);
+            index = (index + 1) % images.length;
+            imgEl.dataset.index = index;
+            imgEl.src = `/arquivos_simuladores/${images[index]}`;
+        }
+
+        window.prevImage = function(id, event, isModal = false) {
+            if(event) event.stopPropagation();
+            const selector = isModal ? `modal-carousel-img-${id}` : `carousel-img-${id}`;
+            const imgEl = document.getElementById(selector);
+            const images = window.simImages[id];
+            if (!images || images.length === 0 || !imgEl) return;
+
+            let index = parseInt(imgEl.dataset.index);
+            index = (index - 1 + images.length) % images.length;
+            imgEl.dataset.index = index;
+            imgEl.src = `/arquivos_simuladores/${images[index]}`;
+        }
+
+        async function carregarSimuladores() {
+            const loadingEl = document.getElementById('loading');
+            const containerEl = document.getElementById('simuladores-container');
+            
+            try {
+                const response = await fetch('/listar/listarSimuladores');
+                const data = await response.json();
+                
+                loadingEl.style.display = 'none';
+                
+                if (data.success && data.simuladores.length > 0) {
+                    renderizarInterface(data.simuladores);
+                } else {
+                    containerEl.innerHTML = '<div class="no-data-state">Nenhum simulador cadastrado ainda.</div>';
+                }
+            } catch (error) {
+                console.error('Erro:', error);
+                loadingEl.innerHTML = 'Erro ao carregar dados. Tente atualizar a página.';
+            }
+        }
+
+        function renderizarInterface(simuladores) {
+            const container = document.getElementById('simuladores-container');
+            const modalsContainer = document.getElementById('modals-container');
+            
+            container.innerHTML = '';
+            modalsContainer.innerHTML = '';
+            
+            simuladores.forEach(sim => {
+                window.simImages[sim.id] = sim.images || [];
+                const primeiraImagem = (sim.images && sim.images.length) ? sim.images[0] : 'placeholder.jpg';
+
+                const card = document.createElement('article');
+                card.className = 'card';
+                card.setAttribute('data-target', `#modal-sw-${sim.id}`);
+                
+                card.innerHTML = `
+                    <div class="carousel" onclick="event.stopPropagation()">
+                        <button class="carousel-btn left" onclick="window.prevImage(${sim.id}, event, false)">&#10094;</button>
+                        <img id="carousel-img-${sim.id}" class="carousel-img" 
+                            src="/arquivos_simuladores/${primeiraImagem}"
+                            data-index="0"
+                            alt="${sim.name}">
+                        <button class="carousel-btn right" onclick="window.nextImage(${sim.id}, event, false)">&#10095;</button>
+                    </div>
+                    
+                    <div class="card-content">
+                        <h3 class="card-title">${sim.name}</h3>
+                        <p class="card-description">${sim.description || 'Sem descrição.'}</p>
+                    </div>
+                    
+                    <div class="card-meta">
+                        <span class="card-authors">ID: ${sim.id}</span>
+                    </div>
+                `;
+
+                card.addEventListener('click', () => {
+                    const modal = document.getElementById(`modal-sw-${sim.id}`);
+                    if (modal) modal.style.display = 'block';
+                });
+
+                container.appendChild(card);
+
+                const modal = document.createElement('div');
+                modal.id = `modal-sw-${sim.id}`;
+                modal.className = 'modal';
+                
+                const btnRepo = sim.repo_link 
+                    ? `<a href="${sim.repo_link}" target="_blank" class="btn btn-primary">Acessar Repositório</a>` 
+                    : '<button class="btn btn-secondary" disabled>Repositório Indisponível</button>';
+
+                const btnArtigos = sim.articles?.length
+                    ? `
+                        <a href="/artigos.html?id=${sim.id}" class="btn btn-secondary">
+                            Ver materiais de apoio
+                        </a>
+                    `
+                    : "";
+
+                const carrosselModal = `
+                    <div class="carousel modal-carousel" style="border-radius: 10px; overflow: hidden; height: 100%;">
+                        <button class="carousel-btn left" onclick="window.prevImage(${sim.id}, event, true)">&#10094;</button>
+                        <img id="modal-carousel-img-${sim.id}" class="carousel-img" style="max-height: 400px; object-fit: contain; background: #eee;"
+                            src="/arquivos_simuladores/${primeiraImagem}"
+                            data-index="0"
+                            alt="${sim.name}">
+                        <button class="carousel-btn right" onclick="window.nextImage(${sim.id}, event, true)">&#10095;</button>
+                    </div>
+                `;
+
+                modal.innerHTML = `
+                    <div class="modal-content">
+                        <span class="modal-close" onclick="fecharModal('modal-sw-${sim.id}')">&times;</span>
+                        <div class="modal-header"><h2>${sim.name}</h2></div>
+                        <div class="modal-body">
+                            <div class="modal-left">
+                                <div class="modal-image-container" style="height: 100%; min-height: 300px;">
+                                    ${carrosselModal}
+                                </div>
+                            </div>
+                            <div class="modal-right">
+                                <div class="modal-description">
+                                    <p><strong>Descrição:</strong></p>
+                                    <p>${sim.description}</p>
+                                </div>
+                                ${btnRepo}
+                                ${btnArtigos}
+                                <div class="modal-meta-bottom" style="margin-top: 20px;">
+                                    <p><strong>Status:</strong> Ativo</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) modal.style.display = 'none';
+                });
+
+                modalsContainer.appendChild(modal);
+            });
+        }
+
+        window.fecharModal = function(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) modal.style.display = 'none';
+        }
+
+        document.addEventListener('DOMContentLoaded', carregarSimuladores);
+    </script>
+</body>
+</html>

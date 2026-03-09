@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciar Administradores - LSCAD</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="style.css">
+    
+    <style>
+        .requirements-box {
+            background-color: #f8f9fa;
+            border-left: 4px solid var(--primary-color);
+            padding: 15px 20px;
+            border-radius: 4px;
+            margin-bottom: 25px;
+            font-size: 0.9rem;
+            color: var(--text-color);
+        }
+        .requirements-box ul {
+            margin: 5px 0 0 0;
+            padding-left: 20px;
+            color: var(--text-muted);
+        }
+        .requirements-box li {
+            margin-bottom: 3px;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="navbar">
+        <div class="navbar-brand"><a href="/">LSCAD UFMS</a></div>
+        <nav class="navbar-links">
+            <a href="/">Voltar para Home</a>
+        </nav>
+        <div class="navbar-user-area">
+             <button onclick="window.location.href='/'" class="btn-nav btn-admin">Cancelar</button>
+        </div>
+    </header>
+
+    <main class="container">
+        
+        <div id="loading" class="alert-box alert-info">Verificando permissões...</div>
+
+        <div id="unauthorized" class="form-card" style="display:none; text-align: center;">
+            <h2 style="color: #dc3545; margin-bottom: 20px;">Acesso Negado</h2>
+            <p style="margin-bottom: 20px;">Você não tem permissão para acessar esta página.</p>
+            <button class="btn btn-primary" onclick="window.location.href='/login.html'">Ir para Login</button>
+        </div>
+
+        <div id="content" style="display: none;">
+            <div class="form-card">
+                <div style="margin-bottom: 20px; text-align: center; color: var(--text-muted);">
+                    <small>Logado como: <strong id="userName" style="color: var(--primary-color);"></strong></small>
+                </div>
+
+                <h2 class="form-title">Cadastrar Novo Administrador</h2>
+                
+                <div class="requirements-box">
+                    <strong>Requisitos de senha:</strong>
+                    <ul>
+                        <li>Entre 6 e 10 caracteres</li>
+                        <li>Pelo menos uma letra maiúscula</li>
+                        <li>Pelo menos uma letra minúscula</li>
+                        <li>Pelo menos um número</li>
+                        <li>Pelo menos um caractere especial (!@#$%^&*)</li>
+                    </ul>
+                </div>
+
+                <form id="formCadastro" onsubmit="cadastrarAdmin(event)">
+                    
+                    <div class="form-group">
+                        <label class="form-label">Nome Completo</label>
+                        <input type="text" id="name" class="form-input" placeholder="Ex: João Silva" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">E-mail</label>
+                        <input type="email" id="email" class="form-input" placeholder="admin@exemplo.com" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Senha</label>
+                        <input type="password" id="password" class="form-input" placeholder="Digite a senha" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Confirmar Senha</label>
+                        <input type="password" id="confirmPassword" class="form-input" placeholder="Repita a senha" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Cadastrar Administrador</button>
+                </form>
+
+                <div id="mensagem" style="margin-top: 20px; display: none;"></div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+    function verificarAutenticacao() {
+        const token = localStorage.getItem("admToken");
+        
+        if (!token) {
+            mostrarNaoAutorizado();
+            return false;
+        }
+        
+        try {
+            const parts = token.split('.');
+            if (parts.length !== 3) {
+                mostrarNaoAutorizado();
+                return false;
+            }
+            
+            const payload = JSON.parse(atob(parts[1]));
+            
+            if (!payload.is_adm) {
+                alert("Você não tem permissão para acessar esta página.");
+                mostrarNaoAutorizado();
+                return false;
+            }
+            
+            const agora = Date.now();
+            const expira = payload.exp * 1000;
+            
+            if (expira < agora) {
+                alert("Sua sessão expirou. Faça login novamente.");
+                localStorage.removeItem("admToken");
+                mostrarNaoAutorizado();
+                return false;
+            }
+            
+            mostrarConteudo(payload);
+            return true;
+            
+        } catch (err) {
+            mostrarNaoAutorizado();
+            return false;
+        }
+    }
+
+    function mostrarNaoAutorizado() {
+        document.getElementById("loading").style.display = "none";
+        document.getElementById("unauthorized").style.display = "block";
+        document.getElementById("content").style.display = "none";
+    }
+
+    function mostrarConteudo(payload) {
+        document.getElementById("loading").style.display = "none";
+        document.getElementById("unauthorized").style.display = "none";
+        document.getElementById("content").style.display = "block";
+        document.getElementById("userName").textContent = payload.name || payload.email;
+    }
+
+    async function cadastrarAdmin(e) {
+        e.preventDefault();
+        
+        const name = document.getElementById("name").value;
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+        const confirmPassword = document.getElementById("confirmPassword").value;
+        const mensagem = document.getElementById("mensagem");
+        
+        if (password !== confirmPassword) {
+            mensagem.className = "alert-box alert-error";
+            mensagem.textContent = "As senhas não coincidem!";
+            mensagem.style.display = "block";
+            return;
+        }
+        
+        if (password.length < 6) {
+            mensagem.className = "alert-box alert-error";
+            mensagem.textContent = "A senha deve ter pelo menos 6 caracteres!";
+            mensagem.style.display = "block";
+            return;
+        }
+        
+        const token = localStorage.getItem("admToken");
+        
+        if (!token) {
+            alert("Você não está autenticado!");
+            window.location.href = "/";
+            return;
+        }
+        
+        mensagem.style.display = "none";
+        
+        try {
+            const res = await fetch("/manager/cadastrarAdm", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify({ 
+                    name, 
+                    email, 
+                    password,
+                    passwordRepeat: confirmPassword 
+                })
+            });
+            
+            const data = await res.json();
+            
+            if (res.ok) {
+                mensagem.className = "alert-box alert-success";
+                mensagem.textContent = data.message || "Administrador cadastrado com sucesso!";
+                mensagem.style.display = "block";
+                document.getElementById("formCadastro").reset();
+            } else {
+                mensagem.className = "alert-box alert-error";
+                mensagem.textContent = data.message || "Erro ao cadastrar administrador.";
+                mensagem.style.display = "block";
+                
+                if (res.status === 401) {
+                    alert("Sessão expirada. Faça login novamente.");
+                    localStorage.removeItem("admToken");
+                    setTimeout(() => {
+                        window.location.href = "/";
+                    }, 2000);
+                }
+            }
+        } catch (err) {
+            mensagem.className = "alert-box alert-error";
+            mensagem.textContent = "Erro na requisição: " + err.message;
+            mensagem.style.display = "block";
+        }
+    }
+
+    verificarAutenticacao();
+    </script>
+</body>
+</html>

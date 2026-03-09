@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Excluir Simuladores - LSCAD</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        .delete-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+
+        .card-delete {
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.2s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-delete:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            border-color: #dc3545;
+        }
+
+        .card-thumb {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            background-color: #f0f0f0;
+        }
+
+        .card-info h3 {
+            font-size: 1.1rem;
+            margin: 0 0 5px 0;
+            color: var(--text-color);
+        }
+
+        .card-info p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin: 0 0 15px 0;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            margin-top: auto;
+            width: 100%;
+            padding: 10px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-danger:hover {
+            background-color: #b02a37;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="navbar">
+        <div class="navbar-brand"><a href="/">LSCAD UFMS</a></div>
+        <nav class="navbar-links">
+            <a href="/">Voltar para Home</a>
+        </nav>
+        <div class="navbar-user-area">
+             <button onclick="window.location.href='/'" class="btn-nav btn-admin">Cancelar</button>
+        </div>
+    </header>
+
+    <main class="container">
+        
+        <div id="loading" class="alert-box alert-info">Verificando permissões...</div>
+
+        <div id="unauthorized" class="form-card" style="display:none; text-align: center;">
+            <h2 style="color: #dc3545; margin-bottom: 20px;">Acesso Negado</h2>
+            <p style="margin-bottom: 20px;">Você precisa ser administrador para acessar esta página.</p>
+            <button class="btn btn-primary" onclick="window.location.href='/login.html'">Ir para Login</button>
+        </div>
+
+        <div id="content" style="display: none;">
+            
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+                <div>
+                    <h2 class="form-title" style="margin: 0; text-align: left;">Excluir Simuladores</h2>
+                    <p style="color: var(--text-muted); margin-top: 5px;">Atenção: A exclusão é permanente.</p>
+                </div>
+                <small id="userNameDisplay" style="color: var(--primary-color); font-weight: 600;"></small>
+            </div>
+
+            <div id="msgContainer"></div>
+
+            <div id="list" class="delete-grid"></div>
+        </div>
+    </main>
+
+    <script>
+    function verificarAutenticacao() {
+        const token = localStorage.getItem("admToken");
+        
+        if (!token) {
+            mostrarNaoAutorizado();
+            return false;
+        }
+        
+        try {
+            const parts = token.split('.');
+            if (parts.length !== 3) {
+                mostrarNaoAutorizado();
+                return false;
+            }
+            
+            const payload = JSON.parse(atob(parts[1]));
+            const agora = Date.now();
+            const expira = payload.exp * 1000;
+            
+            if (expira < agora) {
+                alert("Sessão expirada. Faça login novamente.");
+                localStorage.removeItem("admToken");
+                mostrarNaoAutorizado();
+                return false;
+            }
+            
+            mostrarConteudo(payload);
+            carregarSimuladores();
+            return true;
+            
+        } catch (err) {
+            mostrarNaoAutorizado();
+            return false;
+        }
+    }
+
+    function mostrarNaoAutorizado() {
+        document.getElementById("loading").style.display = "none";
+        document.getElementById("unauthorized").style.display = "block";
+        document.getElementById("content").style.display = "none";
+    }
+
+    function mostrarConteudo(payload) {
+        document.getElementById("loading").style.display = "none";
+        document.getElementById("unauthorized").style.display = "none";
+        document.getElementById("content").style.display = "block";
+        document.getElementById("userNameDisplay").textContent = `Admin: ${payload.name || payload.email}`;
+    }
+
+    async function carregarSimuladores() {
+        const token = localStorage.getItem("admToken");
+        const container = document.getElementById("list");
+        container.innerHTML = '<div class="alert-box alert-info" style="grid-column: 1/-1;">Carregando lista...</div>';
+
+        try {
+            const res = await fetch("/listar/listarSimuladores", {
+                headers: { "Authorization": "Bearer " + token }
+            });
+
+            if (!res.ok) throw new Error("Falha ao buscar dados");
+
+            const dados = await res.json();
+            container.innerHTML = "";
+
+            if (!Array.isArray(dados.simuladores) || dados.simuladores.length === 0) {
+                container.innerHTML = "<p style='grid-column: 1/-1; text-align:center; color: var(--text-muted);'>Nenhum simulador encontrado.</p>";
+                return;
+            }
+
+            dados.simuladores.forEach(sim => {
+                const card = document.createElement("div");
+                card.className = "card-delete";
+
+                const thumbSrc = (sim.images && sim.images.length > 0) 
+                    ? `/arquivos_simuladores/${sim.images[0]}` 
+                    : 'placeholder.png'; // Ideal ter uma img placeholder se vazio
+
+                card.innerHTML = `
+                    <img src="${thumbSrc}" class="card-thumb" onerror="this.style.display='none'">
+                    <div class="card-info">
+                        <h3>${sim.name}</h3>
+                        <p>ID: ${sim.id}</p>
+                    </div>
+                    <button class="btn-danger" onclick="deletarSimulador(${sim.id}, '${sim.name}')">Excluir Definitivamente</button>
+                `;
+
+                container.appendChild(card);
+            });
+        } catch (err) {
+            container.innerHTML = "<div class='alert-box alert-error' style='grid-column: 1/-1;'>Erro ao carregar simuladores.</div>";
+        }
+    }
+
+    async function deletarSimulador(id, nome) {
+        const token = localStorage.getItem("admToken");
+        
+        if (!confirm(`TEM CERTEZA?\n\nVocê está prestes a excluir:\n"${nome}" (ID: ${id})\n\nEssa ação não pode ser desfeita.`)) {
+            return;
+        }
+
+        const msgContainer = document.getElementById("msgContainer");
+        msgContainer.innerHTML = '<div class="alert-box alert-info">Processando exclusão...</div>';
+
+        try {
+            const res = await fetch(`/deletar/${id}`, {
+                method: "DELETE",
+                headers: { "Authorization": "Bearer " + token }
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                msgContainer.innerHTML = `<div class="alert-box alert-error">Erro: ${data.message}</div>`;
+                return;
+            }
+
+            msgContainer.innerHTML = `<div class="alert-box alert-success">Simulador removido com sucesso!</div>`;
+            
+            setTimeout(() => {
+                msgContainer.innerHTML = "";
+                carregarSimuladores();
+            }, 1000);
+
+        } catch (err) {
+            msgContainer.innerHTML = `<div class="alert-box alert-error">Erro na conexão.</div>`;
+        }
+    }
+
+    verificarAutenticacao();
+    </script>
+</body>
+</html>
