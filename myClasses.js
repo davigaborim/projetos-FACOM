@@ -22,7 +22,7 @@ class Login {
     }
 
     validatePassword() {
-        const TestPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,100}$/;
+        const TestPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{6,100}$/;
         if (this.password === "") {
             this.setError("O campo de senha não foi preenchido");
         } else if (!TestPassword.test(this.password)) {
