@@ -1,0 +1,36 @@
+version: "3.9"
+
+services:
+  db:
+    image: mariadb:11
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_DATABASE: ${MARIA_DB}
+      MYSQL_USER: ${MARIA_USER}
+      MYSQL_PASSWORD: ${MARIA_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MARIA_ROOT_PASSWORD}
+    volumes:
+      - mariadb_data:/var/lib/mysql
+
+  server:
+    build: 
+      dockerfile: Dockerfile
+      context: .
+    volumes: 
+      - .:/plataforma/server
+    expose:
+      - 3000
+    ports:
+      - 3001:3000
+    environment:
+      MARIA_HOST: db
+      MARIA_PORT: 3306
+      MARIA_DB: ${MARIA_DB}
+      MARIA_USER: ${MARIA_USER}
+      MARIA_PASSWORD: ${MARIA_PASSWORD}
+    depends_on:
+      - db
+       
+volumes:
+  mariadb_data:

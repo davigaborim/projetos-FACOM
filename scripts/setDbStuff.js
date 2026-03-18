@@ -2,44 +2,45 @@ const dbPool = require('../dbConnection');
 const bcrypt = require('bcrypt');
 
 async function setGodUser() {
-  await dbPool.query(`
+  await dbPool.execute(`
     CREATE TABLE IF NOT EXISTS managers (
-      id SERIAL PRIMARY KEY,
+      id INT AUTO_INCREMENT PRIMARY KEY,
       name VARCHAR(255) NOT NULL,
       email VARCHAR(255) NOT NULL UNIQUE,
       password_hash VARCHAR(64) NOT NULL
     )
   `);
 
-  const exists = (await dbPool.query(
-    'SELECT EXISTS (SELECT 1 FROM managers WHERE email = $1)',
+  const [rows] = await dbPool.execute(
+    'SELECT COUNT(*) as total FROM managers WHERE email = ?',
     ['goduser@gmail.com']
-  )).rows[0].exists;
+  );
+  const exists = rows[0].total > 0;
 
   if (!exists) {
     const senha = process.env.SENHA_GOD;
-    const senhaHash = await bcrypt.hash(senha, 10);
+    const senhaHash = await bcrypt.hash(senha, 12);
 
-    await dbPool.query(`
+    await dbPool.execute(`
       INSERT INTO managers (name, email, password_hash)
-      VALUES ($1, $2, $3)
+      VALUES (?, ?, ?)
     `, ['goduser', 'goduser@gmail.com', senhaHash]);
   }
 }
 
 async function setSimulatorsTable() {
-  await dbPool.query(`
+  await dbPool.execute(`
     CREATE TABLE IF NOT EXISTS simulators (
-      id SERIAL PRIMARY KEY,
+      id INT AUTO_INCREMENT PRIMARY KEY,
       name VARCHAR(255) NOT NULL,
       description TEXT NOT NULL,
       repo_link TEXT,
-      images TEXT[],
+      images JSON,
       manual TEXT,
-      articles TEXT[]
+      articles JSON
     )
   `);
-
+  
     console.log("Table simulators OK");
 }
 

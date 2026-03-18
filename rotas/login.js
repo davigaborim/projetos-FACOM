@@ -11,6 +11,8 @@ const UNAUTHORIZED = 401;
 const NOT_FOUND = 404;
 const SERVER_ERR = 500;
 
+const HASH_LIXO = "$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPj4oK5mJ1Gse";
+
 router.post("/fazerLogin", validateLogin, async (req, res) => {
     try {
         const login = req.login || req.body;
@@ -19,30 +21,19 @@ router.post("/fazerLogin", validateLogin, async (req, res) => {
             return res.status(400).json({ message: "Email ou senha não fornecidos!" });
         }
 
-        console.log("Tentando login:", login.email);
-
-        const exists = (await dbPool.query(
-            "SELECT EXISTS (SELECT 1 FROM managers WHERE email = $1)",
-            [login.email]
-        )).rows[0].exists;
-
-        if (!exists) {
-            return res.status(NOT_FOUND).json({ message: "Administrador não encontrado!" });
-        }
-
-        const managerQuery = await dbPool.query(
-            "SELECT id, name, password_hash FROM managers WHERE email = $1",
+        const [managerQuery] = await dbPool.execute(
+            "SELECT id, name, password_hash FROM managers WHERE email = ?",
             [login.email]
         );
 
-        const manager = managerQuery.rows[0];
-        console.log("manager query result:", managerQuery.rows);
+        const manager = managerQuery[0] || null;
+        const compararHash = manager ? manager.password_hash : HASH_LIXO;
 
         //comparar senha criptografada
-        const senhaCorreta = await bcrypt.compare(login.password, manager.password_hash);
+        const senhaCorreta = await bcrypt.compare(login.password, compararHash);
 
-        if (!senhaCorreta) {
-            return res.status(UNAUTHORIZED).json({ message: "Senha incorreta!" });
+        if (!manager || !senhaCorreta) {
+            return res.status(UNAUTHORIZED).json({ message: "Email ou senha incorretos." });
         }
 
         const tokenPayload = {
@@ -60,7 +51,7 @@ router.post("/fazerLogin", validateLogin, async (req, res) => {
                 { expiresIn: process.env.JWT_EXPIRES_IN }
             );
         } catch (jwtErr) {
-            return res.status(SERVER_ERR).json({ message: "Erro ao gerar token", error: jwtErr.message });
+            return res.status(SERVER_ERR).json({ message: "Erro ao gerar token."});
         }
 
         const responseData = {
@@ -77,8 +68,9 @@ router.post("/fazerLogin", validateLogin, async (req, res) => {
             .header('Content-Type', 'application/json; charset=utf-8')
             .json(responseData);
 
-    } catch (err) {
-        return res.status(SERVER_ERR).json({ message: "Erro interno.", error: err.message });
+    }catch (err){
+        return res.status(SERVER_ERR).json({ message: "Erro interno.", ...(process.env.NODE_ENV !== "production" && { error: err.message })
+        });
     }
 });
 

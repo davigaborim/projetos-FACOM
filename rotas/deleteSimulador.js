@@ -8,26 +8,24 @@ router.delete("/:id", async (req, res) => {
     const { id } = req.params;
 
     try {
-        const result = await dbPool.query(
-            "SELECT images, manual, articles FROM simulators WHERE id = $1",
+        const [result] = await dbPool.execute(
+            "SELECT images, manual, articles FROM simulators WHERE id = ?",
             [id]
         );
 
-        if (result.rows.length === 0) {
+        if (result.length === 0) {
             return res.status(404).json({ message: "Simulador não encontrado." });
         }
 
-        const { images, manual, articles } = result.rows[0];
+        const images = JSON.parse(result[0].images || "[]");
+        const articles = JSON.parse(result[0].articles || "[]");
+        const manual = result[0].manual;
 
         const basePath = path.join(__dirname, "..", "arquivos_simuladores");
 
         if (images && images.length > 0) {
             images.forEach(img => {
                 const imgPath = path.join(basePath, img);
-
-                console.log("Tentando apagar:", imgPath);
-                console.log("Existe?", fs.existsSync(imgPath));
-
                 if (fs.existsSync(imgPath)) fs.unlinkSync(imgPath);
             });
         }
@@ -46,12 +44,14 @@ router.delete("/:id", async (req, res) => {
             });
         }
 
-        await dbPool.query("DELETE FROM simulators WHERE id = $1", [id]);
+        await dbPool.execute("DELETE FROM simulators WHERE id = ?", [id]);
 
         res.status(200).json({ message: "Simulador deletado com sucesso!" });
 
     } catch (err) {
-        console.error(err);
+        if (process.env.NODE_ENV !== "production") {
+            console.error(err);
+        }
         res.status(500).json({ message: "Erro ao deletar simulador." });
     }
 });

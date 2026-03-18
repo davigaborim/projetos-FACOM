@@ -29,15 +29,17 @@ router.post("/", authJWT, (req, res) => {
             const manualPath = req.files.manual ? req.files.manual[0].filename : null;
             const articlesPaths = (req.files.articles || []).map(f => f.filename);
 
-            await dbPool.query(
+            await dbPool.execute(
                 `INSERT INTO simulators (name, description, repo_link, images, manual, articles)
-                 VALUES ($1, $2, $3, $4, $5, $6)`,
-                [name, description, repo_link, imagePaths, manualPath, articlesPaths]
+                 VALUES (?, ?, ?, ?, ?, ?)`,
+                [name, description, repo_link, JSON.stringify(imagePaths), manualPath, JSON.stringify(articlesPaths)]
             );
 
             res.status(201).json({ message: "Simulador cadastrado com sucesso!" });
         } catch (err) {
-            console.error(err);
+            if(process.env.NODE_ENV !== "production"){
+                console.error(err);
+            }
             res.status(500).json({ message: "Erro interno no servidor." });
         }
     });

@@ -6,7 +6,7 @@ const dbPool = require("../dbConnection");
 const validateManager = require("../middlewares/validateManager");
 
 const CREATED = 201;
-const UNAUTHORIZED = 401;
+const CONFLICT = 409;
 const SERVER_ERR = 500;
 
 router.post("/cadastrarAdm", validateManager, async (req, res) => {
@@ -14,10 +14,10 @@ router.post("/cadastrarAdm", validateManager, async (req, res) => {
         const manager = req.manager;
 
         //criptografar senha
-        const hash = await bcrypt.hash(manager.password, 10);
+        const hash = await bcrypt.hash(manager.password, 12);
 
-        await dbPool.query(
-            "INSERT INTO managers (name, email, password_hash) VALUES ($1, $2, $3)",
+        await dbPool.execute(
+            "INSERT INTO managers (name, email, password_hash) VALUES (?, ?, ?)",
             [manager.name, manager.email, hash]
         );
 
@@ -30,19 +30,23 @@ router.post("/cadastrarAdm", validateManager, async (req, res) => {
         });
 
     } catch (err) {
-        if (err.code === "23505") {
-            const match = err.detail.match(/Key \(([^)]+)\)=\(([^)]+)\)/);
-            return res.status(UNAUTHORIZED).json({
-                message: `${match[1]} ${match[2]} já está cadastrado.`
+        if (err.code === "ER_DUP_ENTRY") {
+            return res.status(CONFLICT).json({
+                message: "Este email já está cadastrado."
             });
         }
 
-        console.error("Erro na rota /cadastrarAdm", err);
-        res.status(SERVER_ERR).send("Erro ao cadastrar ADM.");
+        if (process.env.NODE_ENV !== "production") {
+            console.error("Erro na rota /cadastrarAdm", err);
+        }
+
+        res.status(SERVER_ERR).send("Erro ao cadastrar administrador.");
     }
 });
 
 //Deletar admin
+
+/*
 router.delete("/deletar/:id", async (req, res) => {
     try {
         const { id } = req.params;
@@ -75,5 +79,6 @@ router.delete("/deletar/:id", async (req, res) => {
         });
     }
 });
+*/
 
 module.exports = router;

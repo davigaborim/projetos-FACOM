@@ -18,21 +18,21 @@ router.get("/simuladores/:id/artigos", async (req, res) => {
     try {
         const { id } = req.params;
 
-        const result = await dbPool.query(
+        const [result] = await dbPool.execute(
             `SELECT id, name, manual, articles
              FROM simulators
-             WHERE id = $1`,
+             WHERE id = ?`,
             [id]
         );
 
-        if (result.rows.length === 0) {
+        if (result.length === 0) {
             return res.status(404).json({
                 success: false,
                 message: "Simulador não encontrado"
             });
         }
 
-        const simulador = result.rows[0];
+        const simulador = result[0];
 
         simulador.manual = parseIfJson(simulador.manual);
         simulador.articles = parseIfJson(simulador.articles);
@@ -43,7 +43,9 @@ router.get("/simuladores/:id/artigos", async (req, res) => {
         });
 
     } catch (err) {
-        console.error("Erro ao buscar materiais de apoio:", err);
+        if(process.env.NODE_ENV !== "production"){
+            console.error("Erro ao buscar materiais de apoio:", err);
+        }
         res.status(500).json({
             success: false,
             message: "Erro ao buscar pateriais de apoio"
