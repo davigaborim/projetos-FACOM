@@ -1,7 +1,7 @@
 //basic
+require('dotenv').config();
 const path = require('path');
 const { app } = require('./expressApp');
-require('dotenv').config();
 const express = require("express");
 
 const { setupDatabase } = require('./scripts/setDbStuff.js');
