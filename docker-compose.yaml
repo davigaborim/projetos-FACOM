@@ -1,5 +1,4 @@
 version: "3.9"
-
 services:
   db:
     image: mariadb:11
@@ -12,12 +11,18 @@ services:
       MYSQL_ROOT_PASSWORD: ${MARIA_ROOT_PASSWORD}
     volumes:
       - mariadb_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
 
   server:
-    build: 
+    build:
       dockerfile: Dockerfile
       context: .
-    volumes: 
+    volumes:
       - .:/plataforma/server
     expose:
       - 3000
@@ -30,7 +35,8 @@ services:
       MARIA_USER: ${MARIA_USER}
       MARIA_PASSWORD: ${MARIA_PASSWORD}
     depends_on:
-      - db
-       
+      db:
+        condition: service_healthy
+
 volumes:
   mariadb_data:
