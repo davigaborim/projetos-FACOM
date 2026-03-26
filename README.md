@@ -9,6 +9,7 @@ Make sure you have the following installed on your machine:
 
 ## Installation and setup
 Copy the example file (*.env.example*) as *.env* and edit the file as needed. This file contains important environment variables such as database credentials, allowed origins, and server port — make sure to fill them in before running the application.
+
 Run `npm install` to install all dependencies and `docker compose up` to start the application.
 
 This will start both the MariaDB database and the application server. The API will be available at http://localhost:3000 (or whichever port is configured in your *.env*).
