@@ -13,7 +13,7 @@ async function setGodUser() {
 
   const [rows] = await dbPool.execute(
     'SELECT COUNT(*) as total FROM managers WHERE email = ?',
-    ['goduser@gmail.com']
+    [process.env.EMAIL_GOD]
   );
   const exists = rows[0].total > 0;
 
@@ -24,7 +24,7 @@ async function setGodUser() {
     await dbPool.execute(`
       INSERT INTO managers (name, email, password_hash)
       VALUES (?, ?, ?)
-    `, ['goduser', 'goduser@gmail.com', senhaHash]);
+    `, ['goduser', process.env.EMAIL_GOD, senhaHash]);
   }
 }
 
