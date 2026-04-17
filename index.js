@@ -27,6 +27,12 @@ app.use("/listar", listarRoutes);
 app.use("/artigos", ArtigosRoutes);
 app.use('/arquivos_simuladores', express.static(path.join(__dirname, 'arquivos_simuladores')));
 
+app.use((req, res, next) => {
+    res.removeHeader('X-Frame-Options');
+    res.setHeader('Content-Security-Policy', "frame-ancestors https://lscad.ufms.br");
+    next();
+});
+
 
 app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "public/home.html"));
