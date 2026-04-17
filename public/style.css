@@ -47,6 +47,10 @@ body {
     box-shadow: none;
 }
 
+.navbar-links a {
+    color: #FFFFFF;
+}
+
 .navbar-brand a {
     font-family: var(--font-heading);
     font-size: 1.35rem;
