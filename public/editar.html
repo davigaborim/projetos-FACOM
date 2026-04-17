@@ -340,6 +340,8 @@
         }
         
         formData.append("keepOldImages", document.getElementById("keepOldImages").checked);
+        
+        formData.append("keepOldArticles", document.getElementById("keepOldArticles").checked);
 
         const novasImgs = document.getElementById("images").files;
         for (let f of novasImgs) formData.append("images", f);
