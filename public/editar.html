@@ -1,16 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Editar Simuladores - LSCAD</title>
-    
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    
+
     <link rel="stylesheet" href="style.css">
-    
+
     <style>
         .edit-grid {
             display: grid;
@@ -18,21 +19,23 @@
             gap: 20px;
             margin-bottom: 40px;
         }
-        
+
         .mini-card {
-            background: white;
+            background: rgba(255, 255, 255, 0.1);
             border: 1px solid var(--border-color);
             border-radius: 8px;
             padding: 20px;
             transition: all 0.2s;
             cursor: pointer;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            color: var(--contrast);
         }
-        
+
         .mini-card:hover {
-            border-color: var(--primary-color);
+            border-color: var(--contrast);
             transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            background: rgba(255, 255, 255, 0.18);
         }
 
         .current-images-gallery {
@@ -57,35 +60,38 @@
         }
     </style>
 </head>
+
 <body>
 
     <header class="navbar">
         <div class="navbar-brand"><a href="/">LSCAD Tools</a></div>
         <div class="navbar-user-area">
-             <button onclick="window.location.href='/'" class="btn-nav btn-admin">Cancel</button>
+            <button onclick="window.location.href='/'" class="btn-nav btn-admin">Cancel</button>
         </div>
     </header>
 
     <main class="container">
-        
+
         <div id="loading" class="alert-box alert-info">Verifying authentication...</div>
 
         <div id="unauthorized" class="form-card" style="display:none; text-align: center;">
             <h2 style="color: #dc3545; margin-bottom: 20px;">Acess Denied</h2>
-            <p style="margin-bottom: 20px; color: var(--text-muted);">You are not authenticated or your session has expired.
+            <p style="margin-bottom: 20px; color: var(--text-muted);">You are not authenticated or your session has
+                expired.
             </p>
             <button class="btn btn-primary" onclick="window.location.href='/login.html'">Go to Login</button>
         </div>
 
         <div id="content" style="display: none;">
-            
+
             <div id="selection-stage">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                     <h2 class="form-title" style="margin:0; text-align: left;">Select to Edit</h2>
                     <small id="userNameDisplay" style="color: var(--primary-color); font-weight: 600;"></small>
                 </div>
-                
-                <p style="color: var(--text-muted); margin-bottom: 20px;">Click on a simulator below to load its data into the form.</p>
+
+                <p style="color: var(--text-muted); margin-bottom: 20px;">Click on a simulator below to load its data
+                    into the form.</p>
 
                 <div id="simuladores-list" class="edit-grid"></div>
             </div>
@@ -94,9 +100,11 @@
                 <div class="section-divider"></div>
 
                 <div class="form-card">
-                    <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <div
+                        style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                         <h2 class="form-title" style="margin:0;">Editing Simulator</h2>
-                        <button onclick="cancelarEdicao()" class="btn-nav" style="background: #6c757d; color: #fff; font-size: 0.8rem;">Close Editor</button>
+                        <button onclick="cancelarEdicao()" class="btn-nav"
+                            style="background: #6c757d; color: #fff; font-size: 0.8rem;">Close Editor</button>
                     </div>
 
                     <form id="formEditar" enctype="multipart/form-data">
@@ -115,10 +123,12 @@
                         <div class="form-group">
                             <label class="form-label">Repository (Link)</label>
                             <input type="text" id="repo_link" class="form-input">
-                            
+
                             <div style="margin-top: 10px; display: flex; align-items: center; gap: 8px;">
-                                <input type="checkbox" id="noRepoCheckbox" style="width: 16px; height: 16px; cursor: pointer;">
-                                <label for="noRepoCheckbox" style="cursor: pointer; user-select: none; font-size: 0.9rem; color: var(--text-muted);">
+                                <input type="checkbox" id="noRepoCheckbox"
+                                    style="width: 16px; height: 16px; cursor: pointer;">
+                                <label for="noRepoCheckbox"
+                                    style="cursor: pointer; user-select: none; font-size: 0.9rem; color: var(--text-muted);">
                                     This project doesn't have a public repository
                                 </label>
                             </div>
@@ -127,19 +137,22 @@
                         <div class="form-group">
                             <label class="form-label">CURRENT IMAGES</label>
                             <div id="imgsAtuais" class="current-images-gallery"></div>
-                            
+
                             <div style="display: flex; align-items: center; gap: 10px; margin-top: 5px;">
                                 <input type="checkbox" id="keepOldImages" checked style="width: 18px; height: 18px;">
-                                <label for="keepOldImages" style="font-weight: 500; cursor: pointer;">Keep old images</label>
+                                <label for="keepOldImages" style="font-weight: 500; cursor: pointer;">Keep old
+                                    images</label>
                             </div>
-                            <small style="color: var(--text-muted);">This will keep the current images in the gallery</small>
+                            <small style="color: var(--text-muted);">This will keep the current images in the
+                                gallery</small>
                         </div>
 
                         <div class="form-group">
                             <label class="form-label">Add New Images</label>
                             <div class="file-input-wrapper">
                                 <input type="file" id="images" name="images" multiple accept="image/*">
-                                <p style="margin: 5px 0 0; font-size: 0.9rem; color: var(--text-muted);">This will be added to the existing carousel (if checked above)</p>
+                                <p style="margin: 5px 0 0; font-size: 0.9rem; color: var(--text-muted);">This will be
+                                    added to the existing carousel (if checked above)</p>
                             </div>
                         </div>
 
@@ -153,12 +166,14 @@
                         <div class="form-group">
                             <label class="form-label">Current Articles</label>
                             <div id="artigosAtuais" class="current-images-gallery"></div>
-                            
+
                             <div style="display: flex; align-items: center; gap: 10px; margin-top: 5px;">
                                 <input type="checkbox" id="keepOldArticles" checked style="width: 18px; height: 18px;">
-                                <label for="keepOldArticles" style="font-weight: 500; cursor: pointer;">Keep old articles</label>
+                                <label for="keepOldArticles" style="font-weight: 500; cursor: pointer;">Keep old
+                                    articles</label>
                             </div>
-                            <small style="color: var(--text-muted);">This will keep only the current articles in the gallery</small>
+                            <small style="color: var(--text-muted);">This will keep only the current articles in the
+                                gallery</small>
                         </div>
 
                         <div class="form-group">
@@ -179,204 +194,205 @@
     </main>
 
     <script>
-    const checkboxRepo = document.getElementById('noRepoCheckbox');
-    const inputRepo = document.getElementById('repo_link');
+        const checkboxRepo = document.getElementById('noRepoCheckbox');
+        const inputRepo = document.getElementById('repo_link');
 
-    checkboxRepo.addEventListener('change', function() {
-        if (this.checked) {
-            inputRepo.value = '';
-            inputRepo.disabled = true;
-            inputRepo.style.backgroundColor = '#e9ecef';
-            inputRepo.placeholder = 'Sem repositório';
-        } else {
-            inputRepo.disabled = false;
-            inputRepo.style.backgroundColor = '#fcfcfc';
-            inputRepo.placeholder = 'https://github.com/...';
-        }
-    });
+        checkboxRepo.addEventListener('change', function () {
+            if (this.checked) {
+                inputRepo.value = '';
+                inputRepo.disabled = true;
+                inputRepo.style.backgroundColor = '#e9ecef';
+                inputRepo.placeholder = 'Sem repositório';
+            } else {
+                inputRepo.disabled = false;
+                inputRepo.style.backgroundColor = '#fcfcfc';
+                inputRepo.placeholder = 'https://github.com/...';
+            }
+        });
 
-    function verificarAutenticacao() {
-        const token = localStorage.getItem("admToken");
-        if (!token) { mostrarNaoAutorizado(); return false; }
+        function verificarAutenticacao() {
+            const token = localStorage.getItem("admToken");
+            if (!token) { mostrarNaoAutorizado(); return false; }
 
-        try {
-            const parts = token.split('.');
-            const payload = JSON.parse(atob(parts[1]));
-            const agora = Date.now();
-            
-            if ((payload.exp * 1000) < agora) {
-                alert("Sessão expirada.");
-                localStorage.removeItem("admToken");
+            try {
+                const parts = token.split('.');
+                const payload = JSON.parse(atob(parts[1]));
+                const agora = Date.now();
+
+                if ((payload.exp * 1000) < agora) {
+                    alert("Sessão expirada.");
+                    localStorage.removeItem("admToken");
+                    mostrarNaoAutorizado();
+                    return false;
+                }
+
+                mostrarConteudo(payload);
+                listarSimuladores();
+                return true;
+            } catch (err) {
                 mostrarNaoAutorizado();
                 return false;
             }
-
-            mostrarConteudo(payload);
-            listarSimuladores(); 
-            return true;
-        } catch (err) {
-            mostrarNaoAutorizado();
-            return false;
         }
-    }
 
-    function mostrarNaoAutorizado() {
-        document.getElementById("loading").style.display = "none";
-        document.getElementById("unauthorized").style.display = "block";
-    }
+        function mostrarNaoAutorizado() {
+            document.getElementById("loading").style.display = "none";
+            document.getElementById("unauthorized").style.display = "block";
+        }
 
-    function mostrarConteudo(payload) {
-        document.getElementById("loading").style.display = "none";
-        document.getElementById("content").style.display = "block";
-        document.getElementById("userNameDisplay").textContent = `Admin: ${payload.name || payload.email}`;
-    }
+        function mostrarConteudo(payload) {
+            document.getElementById("loading").style.display = "none";
+            document.getElementById("content").style.display = "block";
+            document.getElementById("userNameDisplay").textContent = `Admin: ${payload.name || payload.email}`;
+        }
 
-    async function listarSimuladores() {
-        const token = localStorage.getItem("admToken");
-        const container = document.getElementById("simuladores-list");
-        
-        try {
-            const res = await fetch("/listar/listarSimuladores", {
-                headers: { "Authorization": "Bearer " + token }
-            });
-            const data = await res.json();
+        async function listarSimuladores() {
+            const token = localStorage.getItem("admToken");
+            const container = document.getElementById("simuladores-list");
 
-            container.innerHTML = "";
-            if (!data.simuladores || data.simuladores.length === 0) {
-                container.innerHTML = "<p>Nenhum simulador encontrado.</p>";
-                return;
-            }
+            try {
+                const res = await fetch("/listar/listarSimuladores", {
+                    headers: { "Authorization": "Bearer " + token }
+                });
+                const data = await res.json();
 
-            data.simuladores.forEach(sim => {
-                const card = document.createElement("div");
-                card.className = "mini-card";
-                card.innerHTML = `
+                container.innerHTML = "";
+                if (!data.simuladores || data.simuladores.length === 0) {
+                    container.innerHTML = "<p>Nenhum simulador encontrado.</p>";
+                    return;
+                }
+
+                data.simuladores.forEach(sim => {
+                    const card = document.createElement("div");
+                    card.className = "mini-card";
+                    card.innerHTML = `
                     <h3 style="margin: 0 0 10px 0; color: var(--primary-color);">${sim.name}</h3>
                     <p style="margin: 0; color: var(--text-muted); font-size: 0.9rem;">ID: ${sim.id}</p>
                     <p style="margin: 0; color: var(--text-muted); font-size: 0.8rem; margin-top: 5px;">Click to edit</p>
                 `;
-                card.onclick = () => carregarParaEdicao(sim.id);
-                container.appendChild(card);
-            });
-
-        } catch (err) {
-            container.innerHTML = "<p style='color:red'>Erro ao carregar lista.</p>";
-        }
-    }
-
-    async function carregarParaEdicao(id) {
-        const token = localStorage.getItem("admToken");
-        
-        document.getElementById("edit-stage").style.display = "block";
-        document.getElementById("edit-stage").scrollIntoView({ behavior: 'smooth' });
-
-        try {
-            const res = await fetch("/listar/listarSimuladores", {
-                headers: { "Authorization": "Bearer " + token }
-            });
-            const data = await res.json();
-            const sim = data.simuladores.find(s => s.id === id);
-
-            if (!sim) { alert("Erro: Simulador não encontrado."); return; }
-
-            document.getElementById("id").value = sim.id;
-            document.getElementById("name").value = sim.name;
-            document.getElementById("description").value = sim.description;
-            
-            if (!sim.repo_link || sim.repo_link.trim() === "") {
-                checkboxRepo.checked = true;
-                inputRepo.value = "";
-                inputRepo.disabled = true;
-                inputRepo.style.backgroundColor = '#e9ecef';
-            } else {
-                checkboxRepo.checked = false;
-                inputRepo.value = sim.repo_link;
-                inputRepo.disabled = false;
-                inputRepo.style.backgroundColor = '#fcfcfc';
-            }
-
-            const boxImgs = document.getElementById("imgsAtuais");
-            boxImgs.innerHTML = "";
-            if (sim.images && sim.images.length > 0) {
-                sim.images.forEach(img => {
-                    boxImgs.innerHTML += `<img src="/arquivos_simuladores/${img}" class="current-img-thumb" title="${img}">`;
+                    card.onclick = () => carregarParaEdicao(sim.id);
+                    container.appendChild(card);
                 });
+
+            } catch (err) {
+                container.innerHTML = "<p style='color:red'>Erro ao carregar lista.</p>";
+            }
+        }
+
+        async function carregarParaEdicao(id) {
+            const token = localStorage.getItem("admToken");
+
+            document.getElementById("edit-stage").style.display = "block";
+            document.getElementById("edit-stage").scrollIntoView({ behavior: 'smooth' });
+
+            try {
+                const res = await fetch("/listar/listarSimuladores", {
+                    headers: { "Authorization": "Bearer " + token }
+                });
+                const data = await res.json();
+                const sim = data.simuladores.find(s => s.id === id);
+
+                if (!sim) { alert("Erro: Simulador não encontrado."); return; }
+
+                document.getElementById("id").value = sim.id;
+                document.getElementById("name").value = sim.name;
+                document.getElementById("description").value = sim.description;
+
+                if (!sim.repo_link || sim.repo_link.trim() === "") {
+                    checkboxRepo.checked = true;
+                    inputRepo.value = "";
+                    inputRepo.disabled = true;
+                    inputRepo.style.backgroundColor = 'rgba(255,255,255,0.05)';
+                } else {
+                    checkboxRepo.checked = false;
+                    inputRepo.value = sim.repo_link;
+                    inputRepo.disabled = false;
+                    inputRepo.style.backgroundColor = 'rgba(255,255,255,0.15)';
+                }
+
+                const boxImgs = document.getElementById("imgsAtuais");
+                boxImgs.innerHTML = "";
+                if (sim.images && sim.images.length > 0) {
+                    sim.images.forEach(img => {
+                        boxImgs.innerHTML += `<img src="/arquivos_simuladores/${img}" class="current-img-thumb" title="${img}">`;
+                    });
+                } else {
+                    boxImgs.innerHTML = "<span style='color:var(--text-muted)'>Sem imagens atuais.</span>";
+                }
+
+            } catch (err) {
+                alert("Erro ao buscar detalhes.");
+            }
+        }
+
+        function cancelarEdicao() {
+            document.getElementById("edit-stage").style.display = "none";
+            document.getElementById("formEditar").reset();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        document.getElementById("formEditar").addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const token = localStorage.getItem("admToken");
+            const id = document.getElementById("id").value;
+            const resultado = document.getElementById("resultado");
+
+            resultado.className = "alert-box alert-info";
+            resultado.innerHTML = "Salvando alterações...";
+            resultado.style.display = "block";
+
+            const formData = new FormData();
+            formData.append("name", document.getElementById("name").value);
+            formData.append("description", document.getElementById("description").value);
+
+            if (checkboxRepo.checked) {
+                formData.append("repo_link", "");
             } else {
-                boxImgs.innerHTML = "<span style='color:var(--text-muted)'>Sem imagens atuais.</span>";
+                formData.append("repo_link", document.getElementById("repo_link").value);
             }
 
-        } catch (err) {
-            alert("Erro ao buscar detalhes.");
-        }
-    }
+            formData.append("keepOldImages", document.getElementById("keepOldImages").checked);
 
-    function cancelarEdicao() {
-        document.getElementById("edit-stage").style.display = "none";
-        document.getElementById("formEditar").reset();
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
+            formData.append("keepOldArticles", document.getElementById("keepOldArticles").checked);
 
-    document.getElementById("formEditar").addEventListener("submit", async (e) => {
-        e.preventDefault();
-        
-        const token = localStorage.getItem("admToken");
-        const id = document.getElementById("id").value;
-        const resultado = document.getElementById("resultado");
-        
-        resultado.className = "alert-box alert-info";
-        resultado.innerHTML = "Salvando alterações...";
-        resultado.style.display = "block";
+            const novasImgs = document.getElementById("images").files;
+            for (let f of novasImgs) formData.append("images", f);
 
-        const formData = new FormData();
-        formData.append("name", document.getElementById("name").value);
-        formData.append("description", document.getElementById("description").value);
-        
-        if (checkboxRepo.checked) {
-            formData.append("repo_link", "");
-        } else {
-            formData.append("repo_link", document.getElementById("repo_link").value);
-        }
-        
-        formData.append("keepOldImages", document.getElementById("keepOldImages").checked);
-        
-        formData.append("keepOldArticles", document.getElementById("keepOldArticles").checked);
+            const manual = document.getElementById("manual").files[0];
+            if (manual) formData.append("manual", manual);
 
-        const novasImgs = document.getElementById("images").files;
-        for (let f of novasImgs) formData.append("images", f);
+            const novosArtigos = document.getElementById("articles").files;
+            for (let f of novosArtigos) formData.append("articles", f);
 
-        const manual = document.getElementById("manual").files[0];
-        if (manual) formData.append("manual", manual);
+            try {
+                const res = await fetch(`/editar/${id}`, {
+                    method: "PUT",
+                    headers: { "Authorization": "Bearer " + token },
+                    body: formData
+                });
 
-        const novosArtigos = document.getElementById("articles").files;
-        for (let f of novosArtigos) formData.append("articles", f);
+                const data = await res.json();
 
-        try {
-            const res = await fetch(`/editar/${id}`, {
-                method: "PUT",
-                headers: { "Authorization": "Bearer " + token },
-                body: formData
-            });
-
-            const data = await res.json();
-            
-            if (res.ok) {
-                resultado.className = "alert-box alert-success";
-                resultado.innerHTML = "Simulador atualizado com sucesso!";
-                listarSimuladores();
-                setTimeout(() => {
-                    resultado.style.display = "none";
-                }, 3000);
-            } else {
+                if (res.ok) {
+                    resultado.className = "alert-box alert-success";
+                    resultado.innerHTML = "Simulador atualizado com sucesso!";
+                    listarSimuladores();
+                    setTimeout(() => {
+                        resultado.style.display = "none";
+                    }, 3000);
+                } else {
+                    resultado.className = "alert-box alert-error";
+                    resultado.innerHTML = "Erro: " + (data.message || "Falha ao salvar");
+                }
+            } catch (err) {
                 resultado.className = "alert-box alert-error";
-                resultado.innerHTML = "Erro: " + (data.message || "Falha ao salvar");
+                resultado.innerHTML = "Erro na requisição.";
             }
-        } catch (err) {
-            resultado.className = "alert-box alert-error";
-            resultado.innerHTML = "Erro na requisição.";
-        }
-    });
+        });
 
-    verificarAutenticacao();
+        verificarAutenticacao();
     </script>
 </body>
+
 </html>

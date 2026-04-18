@@ -1,14 +1,15 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Excluir Simuladores - LSCAD</title>
-    
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    
+
     <link rel="stylesheet" href="style.css">
 
     <style>
@@ -20,22 +21,24 @@
         }
 
         .card-delete {
-            background: white;
+            background: rgba(255, 255, 255, 0.1);
             border: 1px solid var(--border-color);
             border-radius: 12px;
             padding: 20px;
             transition: all 0.2s;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             display: flex;
             flex-direction: column;
             position: relative;
             overflow: hidden;
+            color: var(--contrast);
         }
 
         .card-delete:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-            border-color: #dc3545;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            border-color: #e74c3c;
+            background: rgba(255, 255, 255, 0.15);
         }
 
         .card-thumb {
@@ -44,23 +47,23 @@
             object-fit: cover;
             border-radius: 8px;
             margin-bottom: 15px;
-            background-color: #f0f0f0;
+            background-color: rgba(255, 255, 255, 0.1);
         }
 
         .card-info h3 {
             font-size: 1.1rem;
             margin: 0 0 5px 0;
-            color: var(--text-color);
+            color: var(--contrast);
         }
 
         .card-info p {
             font-size: 0.85rem;
-            color: var(--text-muted);
+            color: var(--contrast-2);
             margin: 0 0 15px 0;
         }
 
         .btn-danger {
-            background-color: #dc3545;
+            background-color: #c0392b;
             color: white;
             border: none;
             margin-top: auto;
@@ -73,21 +76,22 @@
         }
 
         .btn-danger:hover {
-            background-color: #b02a37;
+            background-color: #96281b;
         }
     </style>
 </head>
+
 <body>
 
     <header class="navbar">
         <div class="navbar-brand"><a href="/">LSCAD Tools</a></div>
         <div class="navbar-user-area">
-             <button onclick="window.location.href='/'" class="btn-nav btn-admin">Cancel</button>
+            <button onclick="window.location.href='/'" class="btn-nav btn-admin">Cancel</button>
         </div>
     </header>
 
     <main class="container">
-        
+
         <div id="loading" class="alert-box alert-info">Verifying permissions...</div>
 
         <div id="unauthorized" class="form-card" style="display:none; text-align: center;">
@@ -97,7 +101,7 @@
         </div>
 
         <div id="content" style="display: none;">
-            
+
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
                 <div>
                     <h2 class="form-title" style="margin: 0; text-align: left;">Delete Simulators</h2>
@@ -113,84 +117,84 @@
     </main>
 
     <script>
-    function verificarAutenticacao() {
-        const token = localStorage.getItem("admToken");
-        
-        if (!token) {
-            mostrarNaoAutorizado();
-            return false;
-        }
-        
-        try {
-            const parts = token.split('.');
-            if (parts.length !== 3) {
+        function verificarAutenticacao() {
+            const token = localStorage.getItem("admToken");
+
+            if (!token) {
                 mostrarNaoAutorizado();
                 return false;
             }
-            
-            const payload = JSON.parse(atob(parts[1]));
-            const agora = Date.now();
-            const expira = payload.exp * 1000;
-            
-            if (expira < agora) {
-                alert("Sessão expirada. Faça login novamente.");
-                localStorage.removeItem("admToken");
+
+            try {
+                const parts = token.split('.');
+                if (parts.length !== 3) {
+                    mostrarNaoAutorizado();
+                    return false;
+                }
+
+                const payload = JSON.parse(atob(parts[1]));
+                const agora = Date.now();
+                const expira = payload.exp * 1000;
+
+                if (expira < agora) {
+                    alert("Sessão expirada. Faça login novamente.");
+                    localStorage.removeItem("admToken");
+                    mostrarNaoAutorizado();
+                    return false;
+                }
+
+                mostrarConteudo(payload);
+                carregarSimuladores();
+                return true;
+
+            } catch (err) {
                 mostrarNaoAutorizado();
                 return false;
             }
-            
-            mostrarConteudo(payload);
-            carregarSimuladores();
-            return true;
-            
-        } catch (err) {
-            mostrarNaoAutorizado();
-            return false;
         }
-    }
 
-    function mostrarNaoAutorizado() {
-        document.getElementById("loading").style.display = "none";
-        document.getElementById("unauthorized").style.display = "block";
-        document.getElementById("content").style.display = "none";
-    }
+        function mostrarNaoAutorizado() {
+            document.getElementById("loading").style.display = "none";
+            document.getElementById("unauthorized").style.display = "block";
+            document.getElementById("content").style.display = "none";
+        }
 
-    function mostrarConteudo(payload) {
-        document.getElementById("loading").style.display = "none";
-        document.getElementById("unauthorized").style.display = "none";
-        document.getElementById("content").style.display = "block";
-        document.getElementById("userNameDisplay").textContent = `Admin: ${payload.name || payload.email}`;
-    }
+        function mostrarConteudo(payload) {
+            document.getElementById("loading").style.display = "none";
+            document.getElementById("unauthorized").style.display = "none";
+            document.getElementById("content").style.display = "block";
+            document.getElementById("userNameDisplay").textContent = `Admin: ${payload.name || payload.email}`;
+        }
 
-    async function carregarSimuladores() {
-        const token = localStorage.getItem("admToken");
-        const container = document.getElementById("list");
-        container.innerHTML = '<div class="alert-box alert-info" style="grid-column: 1/-1;">Carregando lista...</div>';
+        async function carregarSimuladores() {
+            const token = localStorage.getItem("admToken");
+            const container = document.getElementById("list");
+            container.innerHTML = '<div class="alert-box alert-info" style="grid-column: 1/-1;">Carregando lista...</div>';
 
-        try {
-            const res = await fetch("/listar/listarSimuladores", {
-                headers: { "Authorization": "Bearer " + token }
-            });
+            try {
+                const res = await fetch("/listar/listarSimuladores", {
+                    headers: { "Authorization": "Bearer " + token }
+                });
 
-            if (!res.ok) throw new Error("Falha ao buscar dados");
+                if (!res.ok) throw new Error("Falha ao buscar dados");
 
-            const dados = await res.json();
-            container.innerHTML = "";
+                const dados = await res.json();
+                container.innerHTML = "";
 
-            if (!Array.isArray(dados.simuladores) || dados.simuladores.length === 0) {
-                container.innerHTML = "<p style='grid-column: 1/-1; text-align:center; color: var(--text-muted);'>Nenhum simulador encontrado.</p>";
-                return;
-            }
+                if (!Array.isArray(dados.simuladores) || dados.simuladores.length === 0) {
+                    container.innerHTML = "<p style='grid-column: 1/-1; text-align:center; color: var(--text-muted);'>Nenhum simulador encontrado.</p>";
+                    return;
+                }
 
-            dados.simuladores.forEach(sim => {
-                const card = document.createElement("div");
-                card.className = "card-delete";
+                dados.simuladores.forEach(sim => {
+                    const card = document.createElement("div");
+                    card.className = "card-delete";
 
-                const thumbSrc = (sim.images && sim.images.length > 0) 
-                    ? `/arquivos_simuladores/${sim.images[0]}` 
-                    : 'placeholder.png'; // Ideal ter uma img placeholder se vazio
+                    const thumbSrc = (sim.images && sim.images.length > 0)
+                        ? `/arquivos_simuladores/${sim.images[0]}`
+                        : 'placeholder.png'; // Ideal ter uma img placeholder se vazio
 
-                card.innerHTML = `
+                    card.innerHTML = `
                     <img src="${thumbSrc}" class="card-thumb" onerror="this.style.display='none'">
                     <div class="card-info">
                         <h3>${sim.name}</h3>
@@ -199,49 +203,50 @@
                     <button class="btn-danger" onclick="deletarSimulador(${sim.id}, '${sim.name}')">Delete Permanently</button>
                 `;
 
-                container.appendChild(card);
-            });
-        } catch (err) {
-            container.innerHTML = "<div class='alert-box alert-error' style='grid-column: 1/-1;'>Erro ao carregar simuladores.</div>";
-        }
-    }
-
-    async function deletarSimulador(id, nome) {
-        const token = localStorage.getItem("admToken");
-        
-        if (!confirm(`ARE YOU SURE?\n\nYou are about to delete:\n"${nome}" (ID: ${id})\n\nThis action cannot be undone.`)) {
-            return;
+                    container.appendChild(card);
+                });
+            } catch (err) {
+                container.innerHTML = "<div class='alert-box alert-error' style='grid-column: 1/-1;'>Erro ao carregar simuladores.</div>";
+            }
         }
 
-        const msgContainer = document.getElementById("msgContainer");
-        msgContainer.innerHTML = '<div class="alert-box alert-info">Processing deletion...</div>';
+        async function deletarSimulador(id, nome) {
+            const token = localStorage.getItem("admToken");
 
-        try {
-            const res = await fetch(`/deletar/${id}`, {
-                method: "DELETE",
-                headers: { "Authorization": "Bearer " + token }
-            });
-
-            const data = await res.json();
-
-            if (!res.ok) {
-                msgContainer.innerHTML = `<div class="alert-box alert-error">Erro: ${data.message}</div>`;
+            if (!confirm(`ARE YOU SURE?\n\nYou are about to delete:\n"${nome}" (ID: ${id})\n\nThis action cannot be undone.`)) {
                 return;
             }
 
-            msgContainer.innerHTML = `<div class="alert-box alert-success">Simulator deleted successfully!</div>`;
-            
-            setTimeout(() => {
-                msgContainer.innerHTML = "";
-                carregarSimuladores();
-            }, 1000);
+            const msgContainer = document.getElementById("msgContainer");
+            msgContainer.innerHTML = '<div class="alert-box alert-info">Processing deletion...</div>';
 
-        } catch (err) {
-            msgContainer.innerHTML = `<div class="alert-box alert-error">Connection error.</div>`;
+            try {
+                const res = await fetch(`/deletar/${id}`, {
+                    method: "DELETE",
+                    headers: { "Authorization": "Bearer " + token }
+                });
+
+                const data = await res.json();
+
+                if (!res.ok) {
+                    msgContainer.innerHTML = `<div class="alert-box alert-error">Erro: ${data.message}</div>`;
+                    return;
+                }
+
+                msgContainer.innerHTML = `<div class="alert-box alert-success">Simulator deleted successfully!</div>`;
+
+                setTimeout(() => {
+                    msgContainer.innerHTML = "";
+                    carregarSimuladores();
+                }, 1000);
+
+            } catch (err) {
+                msgContainer.innerHTML = `<div class="alert-box alert-error">Connection error.</div>`;
+            }
         }
-    }
 
-    verificarAutenticacao();
+        verificarAutenticacao();
     </script>
 </body>
+
 </html>
