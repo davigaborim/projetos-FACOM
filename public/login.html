@@ -1,14 +1,15 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Administrativo - LSCAD</title>
-    
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    
+
     <link rel="stylesheet" href="style.css">
 
     <style>
@@ -16,36 +17,37 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 80vh; 
+            min-height: 80vh;
         }
     </style>
 </head>
+
 <body>
 
     <header class="navbar">
         <div class="navbar-brand"><a href="/">LSCAD Tools</a></div>
         <nav class="navbar-links">
-            <a href="/">Voltar para Home</a>
+            <a href="/">Home</a>
         </nav>
     </header>
 
     <main class="container login-wrapper">
-        
+
         <div class="form-card" style="width: 100%; max-width: 500px;">
-            <h2 class="form-title">Acesso Administrativo</h2>
-            
+            <h2 class="form-title">Admin Access</h2>
+
             <form id="formLogin">
                 <div class="form-group">
-                    <label class="form-label" for="email">E-mail</label>
+                    <label class="form-label" for="email">Email</label>
                     <input type="email" id="email" class="form-input" placeholder="admin@ufms.br" required>
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label" for="password">Senha</label>
-                    <input type="password" id="password" class="form-input" placeholder="Sua senha segura" required>
+                    <label class="form-label" for="password">Password</label>
+                    <input type="password" id="password" class="form-input" placeholder="Your safe password" required>
                 </div>
 
-                <button type="submit" class="btn btn-primary" style="margin-top: 20px;">Entrar no Sistema</button>
+                <button type="submit" class="btn btn-primary" style="margin-top: 20px;">Sign In</button>
             </form>
 
             <div id="msg" style="margin-top: 20px; display: none;"></div>
@@ -54,56 +56,57 @@
     </main>
 
     <script>
-    document.getElementById("formLogin").addEventListener("submit", async (e) => {
-        e.preventDefault();
-        
-        const msgDiv = document.getElementById("msg");
-        msgDiv.style.display = "block";
-        msgDiv.className = "alert-box alert-info";
-        msgDiv.innerText = "Verificando credenciais...";
-        
-        const email = document.getElementById("email").value;
-        const password = document.getElementById("password").value;
-        
-        try {
-            const res = await fetch("/login/fazerLogin", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ email, password })
-            });
-            
-            const data = await res.json();
-            
-            if (!res.ok) {
+        document.getElementById("formLogin").addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const msgDiv = document.getElementById("msg");
+            msgDiv.style.display = "block";
+            msgDiv.className = "alert-box alert-info";
+            msgDiv.innerText = "Verifying credentials...";
+
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
+
+            try {
+                const res = await fetch("/login/fazerLogin", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await res.json();
+
+                if (!res.ok) {
+                    msgDiv.className = "alert-box alert-error";
+                    msgDiv.innerText = data.message || "Login failed. Please check your credentials.";
+                    return;
+                }
+
+                if (!data.token) {
+                    msgDiv.className = "alert-box alert-error";
+                    msgDiv.innerText = "Server error: Token not generated.";
+                    return;
+                }
+
+                localStorage.setItem("admToken", data.token);
+
+                msgDiv.className = "alert-box alert-success";
+                msgDiv.innerText = "Login successful! Redirecting...";
+
+                setTimeout(() => {
+                    window.location.href = "/";
+                }, 1000);
+
+            } catch (err) {
                 msgDiv.className = "alert-box alert-error";
-                msgDiv.innerText = data.message || "Erro no login. Verifique seus dados.";
-                return;
+                msgDiv.innerText = "Connection error. Please try again.";
+                console.error(err);
             }
-            
-            if (!data.token) {
-                msgDiv.className = "alert-box alert-error";
-                msgDiv.innerText = "Erro de servidor: Token não gerado.";
-                return;
-            }
-            
-            localStorage.setItem("admToken", data.token);
-            
-            msgDiv.className = "alert-box alert-success";
-            msgDiv.innerText = "Login realizado com sucesso! Redirecionando...";
-            
-            setTimeout(() => {
-                window.location.href = "/";
-            }, 1000);
-            
-        } catch (err) {
-            msgDiv.className = "alert-box alert-error";
-            msgDiv.innerText = "Erro de conexão com o servidor.";
-            console.error(err);
-        }
-    });
+        });
     </script>
 
 </body>
+
 </html>

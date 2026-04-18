@@ -1,95 +1,95 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Upload de Simulador - LSCAD</title>
-    
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    
+
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
     <header class="navbar">
         <div class="navbar-brand"><a href="/">LSCAD Tools</a></div>
-        <nav class="navbar-links">
-            <a href="/">Voltar para Home</a>
-        </nav>
         <div class="navbar-user-area">
-             <button onclick="window.location.href='/'" class="btn-nav btn-admin">Cancelar</button>
+            <button onclick="window.location.href='/'" class="btn-nav btn-admin">Cancel</button>
         </div>
     </header>
 
     <main class="container">
-        
-        <div id="loading" class="alert-box alert-info">Verificando autenticação...</div>
+
+        <div id="loading" class="alert-box alert-info">Verifying authentication...</div>
 
         <div id="unauthorized" class="form-card" style="display:none; text-align: center;">
-            <h2 style="color: #dc3545; margin-bottom: 20px;">Acesso Negado</h2>
-            <p style="margin-bottom: 20px; color: var(--text-muted);">Você não está autenticado ou sua sessão expirou.</p>
-            <button class="btn btn-primary" onclick="window.location.href='/login.html'">Ir para Login</button>
+            <h2 style="color: #dc3545; margin-bottom: 20px;">Acess Denied</h2>
+            <p style="margin-bottom: 20px; color: var(--text-muted);">You are not authenticated or your session has expired.
+            </p>
+            <button class="btn btn-primary" onclick="window.location.href='/login.html'">Go to Login</button>
         </div>
 
         <div id="content" style="display: none;">
             <div class="form-card">
                 <div style="margin-bottom: 20px; text-align: center; color: var(--text-muted);">
-                    <small>Logado como: <strong id="userName" style="color: var(--primary-color);"></strong></small>
+                    <small>Logged in as: <strong id="userName" style="color: var(--primary-color);"></strong></small>
                 </div>
 
-                <h2 class="form-title">Upload de Simulador</h2>
-                
+                <h2 class="form-title">Upload Simulator</h2>
+
                 <form id="formUpload" onsubmit="enviarForm(event)" enctype="multipart/form-data">
-                    
-                    <div class="form-group">
-                        <label class="form-label">Nome do Simulador</label>
-                        <input type="text" name="name" class="form-input" placeholder="Ex: Simulador RISC-V" required>
-                    </div>
 
                     <div class="form-group">
-                        <label class="form-label">Descrição</label>
-                        <textarea name="description" class="form-textarea" placeholder="Descreva as funcionalidades e objetivos do software..."></textarea>
+                        <label class="form-label">Simulator Name</label>
+                        <input type="text" name="name" class="form-input" placeholder="Ex: RISC-V Simulator" required>
                     </div>
-
                     <div class="form-group">
-                        <label class="form-label">Link do Repositório (Git)</label>
-                        <input type="text" id="repoInput" name="repo_link" class="form-input" placeholder="https://github.com/...">
-                        
+                        <label class="form-label">Description</label>
+                        <textarea name="description" class="form-textarea"
+                            placeholder="Describe the features and goals of the software..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Repository Link (Git)</label>
+                        <input type="text" id="repoInput" name="repo_link" class="form-input"
+                            placeholder="https://github.com/...">
+
                         <div style="margin-top: 10px; display: flex; align-items: center; gap: 8px;">
-                            <input type="checkbox" id="noRepoCheckbox" name="no_link" value="true" style="width: 16px; height: 16px; cursor: pointer;">
-                            <label for="noRepoCheckbox" style="cursor: pointer; user-select: none; font-size: 0.9rem; color: var(--text-muted);">
-                                Este projeto não possui repositório público
+                            <input type="checkbox" id="noRepoCheckbox" name="no_link" value="true"
+                                style="width: 16px; height: 16px; cursor: pointer;">
+                            <label for="noRepoCheckbox"
+                                style="cursor: pointer; user-select: none; font-size: 0.9rem; color: var(--text-muted);">
+                                This project has no public repository
                             </label>
                         </div>
                     </div>
-
                     <div class="form-group">
-                        <label class="form-label">Imagens (Screenshots)</label>
+                        <label class="form-label">Images (Screenshots)</label>
                         <div class="file-input-wrapper">
                             <input type="file" name="images" accept="image/*" multiple>
-                            <p style="margin: 5px 0 0; font-size: 0.9rem; color: var(--text-muted);">Selecione até 10 imagens</p>
+                            <p style="margin: 5px 0 0; font-size: 0.9rem; color: var(--text-muted);">Select up to 10
+                                images</p>
                         </div>
                     </div>
-
                     <div class="form-group">
-                        <label class="form-label">Manual de Uso (PDF)</label>
+                        <label class="form-label">User Manual (PDF)</label>
                         <div class="file-input-wrapper">
                             <input type="file" name="manual" accept=".pdf">
-                            <p style="margin: 5px 0 0; font-size: 0.9rem; color: var(--text-muted);">Apenas arquivo .pdf</p>
+                            <p style="margin: 5px 0 0; font-size: 0.9rem; color: var(--text-muted);">PDF files only</p>
                         </div>
                     </div>
-
                     <div class="form-group">
-                        <label class="form-label">Artigos e/ou TCC (PDF)</label>
+                        <label class="form-label">Papers and/or Thesis (PDF)</label>
                         <div class="file-input-wrapper">
                             <input type="file" name="articles" accept=".pdf" multiple>
-                            <p style="margin: 5px 0 0; font-size: 0.9rem; color: var(--text-muted);">Selecione até 15 arquivos .pdf</p>
+                            <p style="margin: 5px 0 0; font-size: 0.9rem; color: var(--text-muted);">Select up to 15 PDF
+                                files</p>
                         </div>
                     </div>
-
-                    <button type="submit" class="btn btn-primary">Enviar Simulador</button>
+                    <button type="submit" class="btn btn-primary">Submit Simulator</button>
                 </form>
 
                 <div id="resultado" style="margin-top: 20px;"></div>
@@ -98,136 +98,137 @@
     </main>
 
     <script>
-    const checkboxRepo = document.getElementById('noRepoCheckbox');
-    const inputRepo = document.getElementById('repoInput');
+        const checkboxRepo = document.getElementById('noRepoCheckbox');
+        const inputRepo = document.getElementById('repoInput');
 
-    checkboxRepo.addEventListener('change', function() {
-        if (this.checked) {
-            inputRepo.value = '';
-            inputRepo.disabled = true;
-            inputRepo.style.backgroundColor = '#e9ecef';
-            inputRepo.placeholder = 'Sem repositório';
-        } else {
-            inputRepo.disabled = false;
-            inputRepo.style.backgroundColor = '#fcfcfc';
-            inputRepo.placeholder = 'https://github.com/...';
-        }
-    });
-
-    function verificarAutenticacao() {
-        const token = localStorage.getItem("admToken");
-        
-        if (!token) {
-            mostrarNaoAutorizado();
-            return false;
-        }
-        
-        try {
-            const parts = token.split('.');
-            if (parts.length !== 3) {
-                mostrarNaoAutorizado();
-                return false;
-            }
-            
-            const payload = JSON.parse(atob(parts[1]));
-            
-            const agora = Date.now();
-            const expira = payload.exp * 1000;
-            
-            if (expira < agora) {
-                alert("Sua sessão expirou. Faça login novamente.");
-                localStorage.removeItem("admToken");
-                mostrarNaoAutorizado();
-                return false;
-            }
-            
-            mostrarConteudo(payload);
-            return true;
-            
-        } catch (err) {
-            mostrarNaoAutorizado();
-            return false;
-        }
-    }
-
-    function mostrarNaoAutorizado() {
-        document.getElementById("loading").style.display = "none";
-        document.getElementById("unauthorized").style.display = "block";
-        document.getElementById("content").style.display = "none";
-    }
-
-    function mostrarConteudo(payload) {
-        document.getElementById("loading").style.display = "none";
-        document.getElementById("unauthorized").style.display = "none";
-        document.getElementById("content").style.display = "block";
-        document.getElementById("userName").textContent = payload.name || payload.email;
-    }
-
-    async function enviarForm(e) {
-        e.preventDefault();
-        
-        const token = localStorage.getItem("admToken");
-        
-        if (!token) {
-            alert("Você não está autenticado!");
-            window.location.href = "/login.html";
-            return;
-        }
-        
-        const form = document.getElementById("formUpload");
-        const formData = new FormData(form);
-
-        if (!formData.has('repo_link')) {
-            formData.append('repo_link', '');
-        }
-        
-        const resultado = document.getElementById("resultado");
-        resultado.className = "alert-box alert-info";
-        resultado.innerHTML = "Enviando dados, aguarde...";
-        resultado.style.display = 'block';
-        
-        try {
-            const res = await fetch("/upload", {
-                method: "POST",
-                headers: {
-                    "Authorization": `Bearer ${token}`
-                },
-                body: formData
-            });
-            
-            const data = await res.json();
-            
-            if (res.ok) {
-                resultado.className = "alert-box alert-success";
-                resultado.innerHTML = "Simulador enviado com sucesso! Redirecionando...";
-                form.reset();
-                checkboxRepo.checked = false;
+        checkboxRepo.addEventListener('change', function () {
+            if (this.checked) {
+                inputRepo.value = '';
+                inputRepo.disabled = true;
+                inputRepo.style.backgroundColor = '#e9ecef';
+                inputRepo.placeholder = 'Sem repositório';
+            } else {
                 inputRepo.disabled = false;
                 inputRepo.style.backgroundColor = '#fcfcfc';
-
-                setTimeout(() => {
-                    window.location.href = "/";
-                }, 1500);
-
-            } else {
-                resultado.className = "alert-box alert-error";
-                resultado.innerHTML = "Erro: " + data.message;
-                
-                if (res.status === 401) {
-                    alert("Sessão expirada. Faça login novamente.");
-                    localStorage.removeItem("admToken");
-                    setTimeout(() => {
-                        window.location.href = "/login.html";
-                    }, 2000);
-                }
+                inputRepo.placeholder = 'https://github.com/...';
             }
-        } catch (err) {
-            resultado.className = "alert-box alert-error";
-            resultado.innerHTML = "Erro na requisição: " + err.message;
-        }
-    }
+        });
 
-    verificarAutenticacao();
+        function verificarAutenticacao() {
+            const token = localStorage.getItem("admToken");
+
+            if (!token) {
+                mostrarNaoAutorizado();
+                return false;
+            }
+
+            try {
+                const parts = token.split('.');
+                if (parts.length !== 3) {
+                    mostrarNaoAutorizado();
+                    return false;
+                }
+
+                const payload = JSON.parse(atob(parts[1]));
+
+                const agora = Date.now();
+                const expira = payload.exp * 1000;
+
+                if (expira < agora) {
+                    alert("Sua sessão expirou. Faça login novamente.");
+                    localStorage.removeItem("admToken");
+                    mostrarNaoAutorizado();
+                    return false;
+                }
+
+                mostrarConteudo(payload);
+                return true;
+
+            } catch (err) {
+                mostrarNaoAutorizado();
+                return false;
+            }
+        }
+
+        function mostrarNaoAutorizado() {
+            document.getElementById("loading").style.display = "none";
+            document.getElementById("unauthorized").style.display = "block";
+            document.getElementById("content").style.display = "none";
+        }
+
+        function mostrarConteudo(payload) {
+            document.getElementById("loading").style.display = "none";
+            document.getElementById("unauthorized").style.display = "none";
+            document.getElementById("content").style.display = "block";
+            document.getElementById("userName").textContent = payload.name || payload.email;
+        }
+
+        async function enviarForm(e) {
+            e.preventDefault();
+
+            const token = localStorage.getItem("admToken");
+
+            if (!token) {
+                alert("Você não está autenticado!");
+                window.location.href = "/login.html";
+                return;
+            }
+
+            const form = document.getElementById("formUpload");
+            const formData = new FormData(form);
+
+            if (!formData.has('repo_link')) {
+                formData.append('repo_link', '');
+            }
+
+            const resultado = document.getElementById("resultado");
+            resultado.className = "alert-box alert-info";
+            resultado.innerHTML = "Enviando dados, aguarde...";
+            resultado.style.display = 'block';
+
+            try {
+                const res = await fetch("/upload", {
+                    method: "POST",
+                    headers: {
+                        "Authorization": `Bearer ${token}`
+                    },
+                    body: formData
+                });
+
+                const data = await res.json();
+
+                if (res.ok) {
+                    resultado.className = "alert-box alert-success";
+                    resultado.innerHTML = "Simulador enviado com sucesso! Redirecionando...";
+                    form.reset();
+                    checkboxRepo.checked = false;
+                    inputRepo.disabled = false;
+                    inputRepo.style.backgroundColor = '#fcfcfc';
+
+                    setTimeout(() => {
+                        window.location.href = "/";
+                    }, 1500);
+
+                } else {
+                    resultado.className = "alert-box alert-error";
+                    resultado.innerHTML = "Erro: " + data.message;
+
+                    if (res.status === 401) {
+                        alert("Sessão expirada. Faça login novamente.");
+                        localStorage.removeItem("admToken");
+                        setTimeout(() => {
+                            window.location.href = "/login.html";
+                        }, 2000);
+                    }
+                }
+            } catch (err) {
+                resultado.className = "alert-box alert-error";
+                resultado.innerHTML = "Erro na requisição: " + err.message;
+            }
+        }
+
+        verificarAutenticacao();
     </script>
 </body>
+
 </html>

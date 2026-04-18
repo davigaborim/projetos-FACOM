@@ -18,7 +18,7 @@ router.post("/fazerLogin", validateLogin, async (req, res) => {
         const login = req.login || req.body;
 
         if (!login.email || !login.password) {
-            return res.status(400).json({ message: "Email ou senha não fornecidos!" });
+            return res.status(400).json({ message: "Email and password are required!" });
         }
 
         const [managerQuery] = await dbPool.execute(
@@ -33,7 +33,7 @@ router.post("/fazerLogin", validateLogin, async (req, res) => {
         const senhaCorreta = await bcrypt.compare(login.password, compararHash);
 
         if (!manager || !senhaCorreta) {
-            return res.status(UNAUTHORIZED).json({ message: "Email ou senha incorretos." });
+            return res.status(UNAUTHORIZED).json({ message: "Incorrect email or password." });
         }
 
         const tokenPayload = {
@@ -51,7 +51,7 @@ router.post("/fazerLogin", validateLogin, async (req, res) => {
                 { expiresIn: process.env.JWT_EXPIRES_IN }
             );
         } catch (jwtErr) {
-            return res.status(SERVER_ERR).json({ message: "Erro ao gerar token."});
+            return res.status(SERVER_ERR).json({ message: "Failed to generate token."});
         }
 
         const responseData = {
@@ -69,7 +69,7 @@ router.post("/fazerLogin", validateLogin, async (req, res) => {
             .json(responseData);
 
     }catch (err){
-        return res.status(SERVER_ERR).json({ message: "Erro interno.", ...(process.env.NODE_ENV !== "production" && { error: err.message })
+        return res.status(SERVER_ERR).json({ message: "Internal server error.", ...(process.env.NODE_ENV !== "production" && { error: err.message })
         });
     }
 });

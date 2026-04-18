@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -29,10 +29,10 @@
 
     <main class="container">
         <section class="category-section">
-            <h2>Softwares e Ferramentas</h2>
-            <p>Explore as ferramentas, simuladores e ambientes de desenvolvimento utilizados pelo laboratório.</p>
+            <h2>Software & Tools</h2>
+            <p>Explore the tools, simulators, and development environments created by students and professors of FACOM.</p>
 
-            <div id="loading" class="loading-state">Carregando simuladores...</div>
+            <div id="loading" class="loading-state">Loading simulators...</div>
             
             <div id="simuladores-container" class="card-grid"></div>
         </section>
@@ -41,15 +41,15 @@
     <div id="modals-container"></div>
 
     <div id="fabContainer" class="fab-container" style="display: none;">
-        <a href="/upload.html" class="fab-main" title="Adicionar Novo">
+        <a href="/upload.html" class="fab-main" title="Add New">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
         </a>
         
-        <a href="/delete.html" class="fab-mini fab-delete" data-tooltip="Excluir Simulador">
+        <a href="/delete.html" class="fab-mini fab-delete" data-tooltip="Delete Simulator">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
         </a>
         
-        <a href="/editar.html" class="fab-mini fab-edit" data-tooltip="Editar Simulador">
+        <a href="/editar.html" class="fab-mini fab-edit" data-tooltip="Edit Simulator">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
         </a>
     </div>
@@ -72,16 +72,16 @@
         const btnLogout = document.getElementById("btnLogout");
 
         if (token && userName) {
-            welcomeSpan.textContent = `Olá, ${userName}`;
+            welcomeSpan.textContent = `Hello, ${userName}`;
             adminControls.style.display = 'inline-flex';
             fabContainer.style.display = 'flex'; 
-            btnLogout.textContent = "Sair";
+            btnLogout.textContent = "Log Out";
             btnLogout.onclick = logout;
         } else {
             welcomeSpan.textContent = "";
             adminControls.style.display = 'none';
             fabContainer.style.display = 'none';
-            btnLogout.textContent = "Entrar";
+            btnLogout.textContent = "Log In";
             btnLogout.onclick = () => window.location.href = "/login.html";
         }
 
@@ -168,7 +168,7 @@
                     
                     <div class="card-content">
                         <h3 class="card-title">${sim.name}</h3>
-                        <p class="card-description">${sim.description || 'Sem descrição.'}</p>
+                        <p class="card-description">${sim.description || 'No Description.'}</p>
                     </div>
                     
                     <div class="card-meta">
@@ -188,13 +188,13 @@
                 modal.className = 'modal';
                 
                 const btnRepo = sim.repo_link 
-                    ? `<a href="${sim.repo_link}" target="_blank" class="btn btn-primary">Acessar Repositório</a>` 
-                    : '<button class="btn btn-secondary" disabled>Repositório Indisponível</button>';
+                    ? `<a href="${sim.repo_link}" target="_blank" class="btn btn-primary">Repository</a>` 
+                    : '<button class="btn btn-secondary" disabled>Repository Unavailable</button>';
 
                 const btnArtigos = sim.articles?.length
                     ? `
                         <a href="/artigos.html?id=${sim.id}" class="btn btn-secondary">
-                            Ver materiais de apoio
+                            Supporting Materials
                         </a>
                     `
                     : "";
@@ -222,13 +222,13 @@
                             </div>
                             <div class="modal-right">
                                 <div class="modal-description">
-                                    <p><strong>Descrição:</strong></p>
+                                    <p><strong>Description:</strong></p>
                                     <p>${sim.description}</p>
                                 </div>
                                 ${btnRepo}
                                 ${btnArtigos}
                                 <div class="modal-meta-bottom" style="margin-top: 20px;">
-                                    <p><strong>Status:</strong> Ativo</p>
+                                    <p><strong>Status:</strong> Active</p>
                                 </div>
                             </div>
                         </div>

@@ -14,7 +14,7 @@ router.delete("/:id", async (req, res) => {
         );
 
         if (result.length === 0) {
-            return res.status(404).json({ message: "Simulador não encontrado." });
+            return res.status(404).json({ message: "Simulator not found." });
         }
 
         const images = JSON.parse(result[0].images || "[]");
@@ -46,13 +46,13 @@ router.delete("/:id", async (req, res) => {
 
         await dbPool.execute("DELETE FROM simulators WHERE id = ?", [id]);
 
-        res.status(200).json({ message: "Simulador deletado com sucesso!" });
+        res.status(200).json({ message: "Simulator deleted successfully!" });
 
     } catch (err) {
         if (process.env.NODE_ENV !== "production") {
             console.error(err);
         }
-        res.status(500).json({ message: "Erro ao deletar simulador." });
+        res.status(500).json({ message: "Error deleting simulator" });
     }
 });
 

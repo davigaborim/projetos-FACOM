@@ -81,30 +81,27 @@
 
     <header class="navbar">
         <div class="navbar-brand"><a href="/">LSCAD Tools</a></div>
-        <nav class="navbar-links">
-            <a href="/">Voltar para Home</a>
-        </nav>
         <div class="navbar-user-area">
-             <button onclick="window.location.href='/'" class="btn-nav btn-admin">Cancelar</button>
+             <button onclick="window.location.href='/'" class="btn-nav btn-admin">Cancel</button>
         </div>
     </header>
 
     <main class="container">
         
-        <div id="loading" class="alert-box alert-info">Verificando permissões...</div>
+        <div id="loading" class="alert-box alert-info">Verifying permissions...</div>
 
         <div id="unauthorized" class="form-card" style="display:none; text-align: center;">
-            <h2 style="color: #dc3545; margin-bottom: 20px;">Acesso Negado</h2>
-            <p style="margin-bottom: 20px;">Você precisa ser administrador para acessar esta página.</p>
-            <button class="btn btn-primary" onclick="window.location.href='/login.html'">Ir para Login</button>
+            <h2 style="color: #dc3545; margin-bottom: 20px;">Access Denied</h2>
+            <p style="margin-bottom: 20px;">You must be an administrator to access this page.</p>
+            <button class="btn btn-primary" onclick="window.location.href='/login.html'">Go to Login</button>
         </div>
 
         <div id="content" style="display: none;">
             
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
                 <div>
-                    <h2 class="form-title" style="margin: 0; text-align: left;">Excluir Simuladores</h2>
-                    <p style="color: var(--text-muted); margin-top: 5px;">Atenção: A exclusão é permanente.</p>
+                    <h2 class="form-title" style="margin: 0; text-align: left;">Delete Simulators</h2>
+                    <p style="color: var(--text-muted); margin-top: 5px;">Warning: Deletion is permanent.</p>
                 </div>
                 <small id="userNameDisplay" style="color: var(--primary-color); font-weight: 600;"></small>
             </div>
@@ -199,7 +196,7 @@
                         <h3>${sim.name}</h3>
                         <p>ID: ${sim.id}</p>
                     </div>
-                    <button class="btn-danger" onclick="deletarSimulador(${sim.id}, '${sim.name}')">Excluir Definitivamente</button>
+                    <button class="btn-danger" onclick="deletarSimulador(${sim.id}, '${sim.name}')">Delete Permanently</button>
                 `;
 
                 container.appendChild(card);
@@ -212,12 +209,12 @@
     async function deletarSimulador(id, nome) {
         const token = localStorage.getItem("admToken");
         
-        if (!confirm(`TEM CERTEZA?\n\nVocê está prestes a excluir:\n"${nome}" (ID: ${id})\n\nEssa ação não pode ser desfeita.`)) {
+        if (!confirm(`ARE YOU SURE?\n\nYou are about to delete:\n"${nome}" (ID: ${id})\n\nThis action cannot be undone.`)) {
             return;
         }
 
         const msgContainer = document.getElementById("msgContainer");
-        msgContainer.innerHTML = '<div class="alert-box alert-info">Processando exclusão...</div>';
+        msgContainer.innerHTML = '<div class="alert-box alert-info">Processing deletion...</div>';
 
         try {
             const res = await fetch(`/deletar/${id}`, {
@@ -232,7 +229,7 @@
                 return;
             }
 
-            msgContainer.innerHTML = `<div class="alert-box alert-success">Simulador removido com sucesso!</div>`;
+            msgContainer.innerHTML = `<div class="alert-box alert-success">Simulator deleted successfully!</div>`;
             
             setTimeout(() => {
                 msgContainer.innerHTML = "";
@@ -240,7 +237,7 @@
             }, 1000);
 
         } catch (err) {
-            msgContainer.innerHTML = `<div class="alert-box alert-error">Erro na conexão.</div>`;
+            msgContainer.innerHTML = `<div class="alert-box alert-error">Connection error.</div>`;
         }
     }
 

@@ -514,7 +514,7 @@ body {
 .fab-edit   { background-color: #f0a500; color: #1a1a1a; }
 .fab-delete { background-color: #c0392b; color: white; }
 
-.fab-container:hover .fab-main  { transform: rotate(45deg); }
+.fab-container:hover .fab-main  { transform: rotate(90deg); }
 .fab-container:hover .fab-mini  { opacity: 1; transform: translateY(0) scale(1); pointer-events: all; }
 
 .fab-mini::after {

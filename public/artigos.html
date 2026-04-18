@@ -1,33 +1,33 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Materiais de Apoio - LSCAD</title>
+    <title>Supporting Materials - LSCAD</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    
+
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
     <header class="navbar">
         <div class="navbar-brand"><a href="/">LSCAD Tools</a></div>
         <div class="navbar-user-area">
-            <button onclick="window.location.href='/'" class="btn-nav">Voltar ao Início</button>
+            <button onclick="window.location.href='/'" class="btn-nav">Back to Home</button>
         </div>
     </header>
 
     <main class="container">
         <section class="category-section">
-            <h2 id="titulo-simulador">Materiais de Apoio</h2>
-            <p>Acesse manuais e artigos técnicos relacionados ao simulador selecionado.</p>
-
-            <h3 class="section-title">Manual do Simulador</h3>
+            <h2 id="titulo-simulador">Supporting Materials</h2>
+            <p>Access manuals and technical articles related to the selected simulator.</p>
+            <h3 class="section-title">Simulator Manual</h3>
             <div id="mostra-manual"></div>
-
-            <h3 class="section-title">Artigos Relacionados</h3>
+            <h3 class="section-title">Related Articles</h3>
             <div id="lista-artigos" class="artigos-container"></div>
         </section>
     </main>
@@ -50,7 +50,7 @@
                     }
 
                     const simulador = data.simulador;
-                    document.getElementById("titulo-simulador").textContent = `Materiais: ${simulador.name || 'Simulador'}`;
+                    document.getElementById("titulo-simulador").textContent = `Materials: ${simulador.name || 'Simulador'}`;
 
                     // Renderiza o Manual
                     if (simulador.manual) {
@@ -64,28 +64,28 @@
                             </div>
                         `;
                     } else {
-                        manualContainer.innerHTML = "<p class='no-data-state' style='padding: 20px 0;'>Este simulador não possui manual cadastrado.</p>";
+                        manualContainer.innerHTML = "<p class='no-data-state' style='padding: 20px 0;'>This simulator has no manual registered.</p>";
                     }
 
                     // Renderiza os Artigos
                     if (!simulador.articles || simulador.articles.length === 0) {
-                        container.innerHTML = "<p class='no-data-state' style='padding: 20px 0;'>Este simulador não possui artigos adicionais.</p>";
+                        container.innerHTML = "<p class='no-data-state' style='padding: 20px 0;'>This simulator has no additional articles.</p>";
                         return;
                     }
 
                     simulador.articles.forEach((article, index) => {
                         const div = document.createElement("div");
                         div.className = "artigo-item";
-                        
+
                         const fileName = typeof article === 'string' ? article : article.file;
 
                         // Removida a lógica e a tag da imagem de thumbnail. O flex-grow cuidará do alinhamento.
                         div.innerHTML = `
                             <div style="flex-grow: 1;">
-                                <h4 style="margin: 0 0 5px 0; color: var(--text-color);">Artigo Técnico #${index + 1}</h4>
-                                <p style="margin: 0; font-size: 0.95rem; color: var(--text-muted);">Documentação científica e técnica de apoio.</p>
+                                <h4 style="margin: 0 0 5px 0; color: var(--text-color);">Technical Article #${index + 1}</h4>
+                                <p style="margin: 0; font-size: 0.95rem; color: var(--text-muted);">Scientific and technical supporting documentation.</p>
                             </div>
-                            <a href="/arquivos_simuladores/${fileName}" target="_blank" class="btn btn-secondary" style="width: auto; margin-bottom: 0;">Visualizar</a>
+                            <a href="/arquivos_simuladores/${fileName}" target="_blank" class="btn btn-secondary" style="width: auto; margin-bottom: 0;">View</a>
                         `;
                         container.appendChild(div);
                     });
@@ -97,4 +97,5 @@
         }
     </script>
 </body>
+
 </html>

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -61,33 +61,31 @@
 
     <header class="navbar">
         <div class="navbar-brand"><a href="/">LSCAD Tools</a></div>
-        <nav class="navbar-links">
-            <a href="/">Voltar para Home</a>
-        </nav>
         <div class="navbar-user-area">
-             <button onclick="window.location.href='/'" class="btn-nav btn-admin">Cancelar</button>
+             <button onclick="window.location.href='/'" class="btn-nav btn-admin">Cancel</button>
         </div>
     </header>
 
     <main class="container">
         
-        <div id="loading" class="alert-box alert-info">Verificando permissões...</div>
+        <div id="loading" class="alert-box alert-info">Verifying authentication...</div>
 
         <div id="unauthorized" class="form-card" style="display:none; text-align: center;">
-            <h2 style="color: #dc3545; margin-bottom: 20px;">Acesso Negado</h2>
-            <p style="margin-bottom: 20px;">Você precisa ser administrador para acessar esta página.</p>
-            <button class="btn btn-primary" onclick="window.location.href='/login.html'">Ir para Login</button>
+            <h2 style="color: #dc3545; margin-bottom: 20px;">Acess Denied</h2>
+            <p style="margin-bottom: 20px; color: var(--text-muted);">You are not authenticated or your session has expired.
+            </p>
+            <button class="btn btn-primary" onclick="window.location.href='/login.html'">Go to Login</button>
         </div>
 
         <div id="content" style="display: none;">
             
             <div id="selection-stage">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                    <h2 class="form-title" style="margin:0; text-align: left;">Selecione para Editar</h2>
+                    <h2 class="form-title" style="margin:0; text-align: left;">Select to Edit</h2>
                     <small id="userNameDisplay" style="color: var(--primary-color); font-weight: 600;"></small>
                 </div>
                 
-                <p style="color: var(--text-muted); margin-bottom: 20px;">Clique em um simulador abaixo para carregar seus dados no formulário.</p>
+                <p style="color: var(--text-muted); margin-bottom: 20px;">Click on a simulator below to load its data into the form.</p>
 
                 <div id="simuladores-list" class="edit-grid"></div>
             </div>
@@ -97,80 +95,80 @@
 
                 <div class="form-card">
                     <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                        <h2 class="form-title" style="margin:0;">Editando Simulador</h2>
-                        <button onclick="cancelarEdicao()" class="btn-nav" style="background: #6c757d; font-size: 0.8rem;">Fechar Edição</button>
+                        <h2 class="form-title" style="margin:0;">Editing Simulator</h2>
+                        <button onclick="cancelarEdicao()" class="btn-nav" style="background: #6c757d; color: #fff; font-size: 0.8rem;">Close Editor</button>
                     </div>
 
                     <form id="formEditar" enctype="multipart/form-data">
                         <input type="hidden" id="id">
 
                         <div class="form-group">
-                            <label class="form-label">Nome</label>
+                            <label class="form-label">Name</label>
                             <input type="text" id="name" class="form-input" required>
                         </div>
 
                         <div class="form-group">
-                            <label class="form-label">Descrição</label>
+                            <label class="form-label">Description</label>
                             <textarea id="description" class="form-textarea" required></textarea>
                         </div>
 
                         <div class="form-group">
-                            <label class="form-label">Repositório (Link)</label>
+                            <label class="form-label">Repository (Link)</label>
                             <input type="text" id="repo_link" class="form-input">
                             
                             <div style="margin-top: 10px; display: flex; align-items: center; gap: 8px;">
                                 <input type="checkbox" id="noRepoCheckbox" style="width: 16px; height: 16px; cursor: pointer;">
                                 <label for="noRepoCheckbox" style="cursor: pointer; user-select: none; font-size: 0.9rem; color: var(--text-muted);">
-                                    Este projeto não possui repositório público
+                                    This project doesn't have a public repository
                                 </label>
                             </div>
                         </div>
 
                         <div class="form-group">
-                            <label class="form-label">Imagens Atuais</label>
+                            <label class="form-label">CURRENT IMAGES</label>
                             <div id="imgsAtuais" class="current-images-gallery"></div>
                             
                             <div style="display: flex; align-items: center; gap: 10px; margin-top: 5px;">
                                 <input type="checkbox" id="keepOldImages" checked style="width: 18px; height: 18px;">
-                                <label for="keepOldImages" style="font-weight: 500; cursor: pointer;">Manter imagens antigas</label>
+                                <label for="keepOldImages" style="font-weight: 500; cursor: pointer;">Keep old images</label>
                             </div>
-                            <small style="color: var(--text-muted);">Desmarque para excluir as imagens acima e usar apenas as novas.</small>
+                            <small style="color: var(--text-muted);">This will keep the current images in the gallery</small>
                         </div>
 
                         <div class="form-group">
-                            <label class="form-label">Adicionar Novas Imagens</label>
+                            <label class="form-label">Add New Images</label>
                             <div class="file-input-wrapper">
                                 <input type="file" id="images" name="images" multiple accept="image/*">
-                                <p style="margin: 5px 0 0; font-size: 0.9rem; color: var(--text-muted);">Isso adicionará ao carrossel existente (se marcado acima)</p>
+                                <p style="margin: 5px 0 0; font-size: 0.9rem; color: var(--text-muted);">This will be added to the existing carousel (if checked above)</p>
                             </div>
                         </div>
 
                         <div class="form-group">
-                            <label class="form-label">Substituir Manual (PDF)</label>
+                            <label class="form-label">Manual Replace (PDF)</label>
                             <div class="file-input-wrapper">
                                 <input type="file" id="manual" name="manual" accept=".pdf">
                             </div>
                         </div>
 
                         <div class="form-group">
-                            <label class="form-label">Artigos Atuais</label>
+                            <label class="form-label">Current Articles</label>
                             <div id="artigosAtuais" class="current-images-gallery"></div>
                             
                             <div style="display: flex; align-items: center; gap: 10px; margin-top: 5px;">
                                 <input type="checkbox" id="keepOldArticles" checked style="width: 18px; height: 18px;">
-                                <label for="keepOldArticles" style="font-weight: 500; cursor: pointer;">Manter artigos antigos</label>
+                                <label for="keepOldArticles" style="font-weight: 500; cursor: pointer;">Keep old articles</label>
                             </div>
-                            <small style="color: var(--text-muted);">Desmarque para excluir os artigos acima e usar apenas os novos.</small>
+                            <small style="color: var(--text-muted);">This will keep only the current articles in the gallery</small>
                         </div>
 
                         <div class="form-group">
-                            <label class="form-label">Adicionar Novos Artigos</label>
+                            <label class="form-label">Add New Articles</label>
                             <div class="file-input-wrapper">
                                 <input type="file" id="articles" name="articles" multiple accept=".pdf">
                             </div>
                         </div>
 
-                        <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
                     </form>
 
                     <div id="resultado" style="margin-top: 20px;"></div>
@@ -255,7 +253,7 @@
                 card.innerHTML = `
                     <h3 style="margin: 0 0 10px 0; color: var(--primary-color);">${sim.name}</h3>
                     <p style="margin: 0; color: var(--text-muted); font-size: 0.9rem;">ID: ${sim.id}</p>
-                    <p style="margin: 0; color: var(--text-muted); font-size: 0.8rem; margin-top: 5px;">Clique para editar</p>
+                    <p style="margin: 0; color: var(--text-muted); font-size: 0.8rem; margin-top: 5px;">Click to edit</p>
                 `;
                 card.onclick = () => carregarParaEdicao(sim.id);
                 container.appendChild(card);
