@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Excluir Simuladores - LSCAD</title>
+    <title>Delete Simulators - LSCAD</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -137,7 +137,7 @@
                 const expira = payload.exp * 1000;
 
                 if (expira < agora) {
-                    alert("Sessão expirada. Faça login novamente.");
+                    alert("Session expired. Please log in again.");
                     localStorage.removeItem("admToken");
                     mostrarNaoAutorizado();
                     return false;
@@ -169,20 +169,20 @@
         async function carregarSimuladores() {
             const token = localStorage.getItem("admToken");
             const container = document.getElementById("list");
-            container.innerHTML = '<div class="alert-box alert-info" style="grid-column: 1/-1;">Carregando lista...</div>';
+            container.innerHTML = '<div class="alert-box alert-info" style="grid-column: 1/-1;">Loading...</div>';
 
             try {
                 const res = await fetch("/listar/listarSimuladores", {
                     headers: { "Authorization": "Bearer " + token }
                 });
 
-                if (!res.ok) throw new Error("Falha ao buscar dados");
+                if (!res.ok) throw new Error("Failed to fetch data.");
 
                 const dados = await res.json();
                 container.innerHTML = "";
 
                 if (!Array.isArray(dados.simuladores) || dados.simuladores.length === 0) {
-                    container.innerHTML = "<p style='grid-column: 1/-1; text-align:center; color: var(--text-muted);'>Nenhum simulador encontrado.</p>";
+                    container.innerHTML = "<p style='grid-column: 1/-1; text-align:center; color: var(--text-muted);'>No simulators found.</p>";
                     return;
                 }
 
@@ -206,7 +206,7 @@
                     container.appendChild(card);
                 });
             } catch (err) {
-                container.innerHTML = "<div class='alert-box alert-error' style='grid-column: 1/-1;'>Erro ao carregar simuladores.</div>";
+                container.innerHTML = "<div class='alert-box alert-error' style='grid-column: 1/-1;'>Failed to load simulators.</div>";
             }
         }
 

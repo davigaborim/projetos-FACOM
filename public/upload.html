@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Upload de Simulador - LSCAD</title>
+    <title>Upload Simulator/Tool - LSCAD</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -135,7 +135,7 @@
                 const expira = payload.exp * 1000;
 
                 if (expira < agora) {
-                    alert("Sua sessão expirou. Faça login novamente.");
+                    alert("Session expired. Please log in again.");
                     localStorage.removeItem("admToken");
                     mostrarNaoAutorizado();
                     return false;
@@ -169,7 +169,7 @@
             const token = localStorage.getItem("admToken");
 
             if (!token) {
-                alert("Você não está autenticado!");
+                alert("You are not authenticated!");
                 window.location.href = "/login.html";
                 return;
             }
@@ -183,7 +183,7 @@
 
             const resultado = document.getElementById("resultado");
             resultado.className = "alert-box alert-info";
-            resultado.innerHTML = "Enviando dados, aguarde...";
+            resultado.innerHTML = "Uploading data, please wait...";
             resultado.style.display = 'block';
 
             try {
@@ -199,7 +199,7 @@
 
                 if (res.ok) {
                     resultado.className = "alert-box alert-success";
-                    resultado.innerHTML = "Simulador enviado com sucesso! Redirecionando...";
+                    resultado.innerHTML = "Simulator uploaded successfully! Redirecting...";
                     form.reset();
                     checkboxRepo.checked = false;
                     inputRepo.disabled = false;
@@ -214,7 +214,7 @@
                     resultado.innerHTML = "Erro: " + data.message;
 
                     if (res.status === 401) {
-                        alert("Sessão expirada. Faça login novamente.");
+                        alert("Session expired. Please log in again.");
                         localStorage.removeItem("admToken");
                         setTimeout(() => {
                             window.location.href = "/login.html";

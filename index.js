@@ -29,10 +29,9 @@ app.use('/arquivos_simuladores', express.static(path.join(__dirname, 'arquivos_s
 
 app.use((req, res, next) => {
     res.removeHeader('X-Frame-Options');
-    res.setHeader('Content-Security-Policy', "frame-ancestors https://lscad.ufms.br");
+    res.setHeader('Content-Security-Policy', "frame-ancestors https://lscad.facom.ufms.br/");
     next();
 });
-
 
 app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "public/home.html"));

@@ -28,7 +28,7 @@ router.get("/simuladores/:id/artigos", async (req, res) => {
         if (result.length === 0) {
             return res.status(404).json({
                 success: false,
-                message: "Simulador não encontrado"
+                message: "Simulator Not Found"
             });
         }
 

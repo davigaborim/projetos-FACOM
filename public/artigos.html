@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
@@ -39,13 +39,13 @@
         const manualContainer = document.getElementById("mostra-manual");
 
         if (!id) {
-            container.innerHTML = "<p class='no-data-state'>ID do simulador não informado.</p>";
+            container.innerHTML = "<p class='no-data-state'>Simulator ID not provided.</p>";
         } else {
             fetch(`/artigos/simuladores/${id}/artigos`)
                 .then(res => res.json())
                 .then(data => {
                     if (!data.success) {
-                        container.innerHTML = "<p class='no-data-state'>Erro ao carregar artigos.</p>";
+                        container.innerHTML = "<p class='no-data-state'>Failed to load articles.</p>";
                         return;
                     }
 
@@ -57,8 +57,8 @@
                         manualContainer.innerHTML = `
                             <div class="artigo-item">
                                 <div style="flex-grow: 1;">
-                                    <h4 style="margin: 0 0 5px 0; color: var(--primary-color);">Manual de Instruções</h4>
-                                    <p style="margin: 0; font-size: 0.95rem;">Guia completo de utilização e instalação.</p>
+                                    <h4 style="margin: 0 0 5px 0; color: var(--primary-color);">User Manual</h4>
+                                    <p style="margin: 0; font-size: 0.95rem;">Complete usage and installation guide.</p>
                                 </div>
                                 <a href="/arquivos_simuladores/${simulador.manual}" target="_blank" class="btn btn-primary" style="width: auto; margin-bottom: 0;">Download PDF</a>
                             </div>
@@ -92,7 +92,7 @@
                 })
                 .catch(err => {
                     console.error(err);
-                    container.innerHTML = "<p class='no-data-state'>Erro na requisição dos dados.</p>";
+                    container.innerHTML = "<p class='no-data-state'>Failed to fetch data.</p>";
                 });
         }
     </script>

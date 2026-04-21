@@ -86,7 +86,7 @@
         }
 
         function logout() {
-            if (confirm("Deseja realmente sair?")) {
+            if (confirm("Are you sure you want to log out?")) {
                 localStorage.removeItem("admToken"); 
                 window.location.href = "/";
             }
@@ -133,11 +133,11 @@
                 if (data.success && data.simuladores.length > 0) {
                     renderizarInterface(data.simuladores);
                 } else {
-                    containerEl.innerHTML = '<div class="no-data-state">Nenhum simulador cadastrado ainda.</div>';
+                    containerEl.innerHTML = '<div class="no-data-state">No simulators registered yet.</div>';
                 }
             } catch (error) {
                 console.error('Erro:', error);
-                loadingEl.innerHTML = 'Erro ao carregar dados. Tente atualizar a página.';
+                loadingEl.innerHTML = 'Failed to load data. Please try refreshing the page.';
             }
         }
 

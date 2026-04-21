@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Editar Simuladores - LSCAD</title>
+    <title>Edit Simulators - LSCAD</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -220,7 +220,7 @@
                 const agora = Date.now();
 
                 if ((payload.exp * 1000) < agora) {
-                    alert("Sessão expirada.");
+                    alert("Session expired.");
                     localStorage.removeItem("admToken");
                     mostrarNaoAutorizado();
                     return false;
@@ -258,7 +258,7 @@
 
                 container.innerHTML = "";
                 if (!data.simuladores || data.simuladores.length === 0) {
-                    container.innerHTML = "<p>Nenhum simulador encontrado.</p>";
+                    container.innerHTML = "<p>No simulators found.</p>";
                     return;
                 }
 
@@ -275,7 +275,7 @@
                 });
 
             } catch (err) {
-                container.innerHTML = "<p style='color:red'>Erro ao carregar lista.</p>";
+                container.innerHTML = "<p style='color:red'>Failed to load list.</p>";
             }
         }
 
@@ -292,7 +292,7 @@
                 const data = await res.json();
                 const sim = data.simuladores.find(s => s.id === id);
 
-                if (!sim) { alert("Erro: Simulador não encontrado."); return; }
+                if (!sim) { alert("Erro: Simulator not found."); return; }
 
                 document.getElementById("id").value = sim.id;
                 document.getElementById("name").value = sim.name;
@@ -317,11 +317,11 @@
                         boxImgs.innerHTML += `<img src="/arquivos_simuladores/${img}" class="current-img-thumb" title="${img}">`;
                     });
                 } else {
-                    boxImgs.innerHTML = "<span style='color:var(--text-muted)'>Sem imagens atuais.</span>";
+                    boxImgs.innerHTML = "<span style='color:var(--text-muted)'>No current images.</span>";
                 }
 
             } catch (err) {
-                alert("Erro ao buscar detalhes.");
+                alert("Failed to fetch details.");
             }
         }
 
@@ -376,18 +376,18 @@
 
                 if (res.ok) {
                     resultado.className = "alert-box alert-success";
-                    resultado.innerHTML = "Simulador atualizado com sucesso!";
+                    resultado.innerHTML = "Simulator updated successfully!";
                     listarSimuladores();
                     setTimeout(() => {
                         resultado.style.display = "none";
                     }, 3000);
                 } else {
                     resultado.className = "alert-box alert-error";
-                    resultado.innerHTML = "Erro: " + (data.message || "Falha ao salvar");
+                    resultado.innerHTML = "Erro: " + (data.message || "Failed to save");
                 }
             } catch (err) {
                 resultado.className = "alert-box alert-error";
-                resultado.innerHTML = "Erro na requisição.";
+                resultado.innerHTML = "Request failed.";
             }
         });
 
