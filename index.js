@@ -27,9 +27,11 @@ app.use("/listar", listarRoutes);
 app.use("/artigos", ArtigosRoutes);
 app.use('/arquivos_simuladores', express.static(path.join(__dirname, 'arquivos_simuladores')));
 
+const frameAncestors = process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',').join(' ') : "'none'";
+
 app.use((req, res, next) => {
     res.removeHeader('X-Frame-Options');
-    res.setHeader('Content-Security-Policy', "frame-ancestors https://lscad.facom.ufms.br/");
+    res.setHeader('Content-Security-Policy', `frame-ancestors ${frameAncestors}`);
     next();
 });
 
@@ -60,7 +62,6 @@ app.get("/deletar.html", (req, res) => {
 app.get("/artigos.html", (req, res) => {
     res.sendFile(path.join(__dirname, "public/artigos.html"));
 });
-
 
 //servidor
 const HOST = '0.0.0.0';
