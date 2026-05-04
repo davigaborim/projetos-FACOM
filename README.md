@@ -8,13 +8,15 @@ LSCAD Tools is an undergraduate research project developed at FACOM/UFMS. It is 
 
 ## Prerequisites
 Make sure you have the following installed on your machine:
-- [Node.js](https://nodejs.org/) (version 18 or higher) and npm
 - [Docker](https://www.docker.com/) and Docker Compose
 
 ## Installation and setup
-Copy the example file (*.env.example*) as *.env* and edit the file as needed. This file contains important environment variables such as database credentials, allowed origins, and server port.
+1. Copy the example file (*.env.example*) as *.env* and edit the file as needed. This file contains important environment variables such as database credentials and allowed origins.
 Make sure to fill them in before running the application.
 
-Run `npm install` to install all dependencies and `docker compose up` to start the application.
+2. Run `docker compose up --build` to start all services.
 
-This will start both the MariaDB database and the application server. The API will be available at http://localhost:3001 (or whichever port is configured in your *.env*).
+## Accessing the application
+After starting, the services will be available at: http://server.localhost (application), http://wordpress.localhost (WordPress) and http://localhost:8080 (Traefik dashboard).
+
+The Traefik dashboard is exposed without authentication (`--api.insecure=true`) for local development only. This setting must be removed in production.
