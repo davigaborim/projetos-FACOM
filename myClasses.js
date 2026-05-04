@@ -17,7 +17,7 @@ class Login {
         const TestEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
         if (!TestEmail.test(this.email)) {
-            this.setError("Formato de email inválido");
+            this.setError("Invalid email format!");
         }
     }
 
@@ -26,7 +26,7 @@ class Login {
         if (this.password === "") {
             this.setError("O campo de senha não foi preenchido");
         } else if (!TestPassword.test(this.password)) {
-            this.setError("Formato de senha inválido");
+            this.setError("Invalid password format!");
         }
     }
 
