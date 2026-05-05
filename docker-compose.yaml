@@ -48,6 +48,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    volumes:
+      - arquivos_simuladores:/plataforma/server/arquivos_simuladores
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.server.rule=Host(`${APP_HOST}`)"
@@ -73,3 +75,4 @@ services:
 
 volumes:
   mariadb_data:
+  arquivos_simuladores:
