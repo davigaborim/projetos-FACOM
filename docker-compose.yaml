@@ -1,24 +1,8 @@
 version: "3.9"
 services:
-  reverse-proxy:
-    image: traefik:v3
-    restart: always
-    command:
-      - "--api.dashboard=true"
-      - "--api.insecure=true" #REMOVE IT IN PRODUCTION
-      - "--providers.docker"
-      - "--providers.docker.exposedbydefault=false"
-      - "--entryPoints.web.address=:80"
-      - "--entryPoints.websecure.address=:443"
-    ports:
-      - "80:80"
-      - "443:443"
-      - "8080:8080"
-    volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock:ro"
-
   db:
     image: mariadb:11
+    restart: always
     environment:
       MYSQL_DATABASE: ${MARIA_DB}
       MYSQL_USER: ${MARIA_USER}
@@ -37,10 +21,11 @@ services:
     build:
       dockerfile: Dockerfile
       context: .
-    expose:
-      - 3000
+    ports:
+      - "3001:3000"
     env_file:
-      - .env 
+      - .env
+    restart: always
     environment:
       MARIA_HOST: db
       MARIA_PORT: 3306
@@ -52,30 +37,6 @@ services:
         condition: service_healthy
     volumes:
       - arquivos_simuladores:/plataforma/server/arquivos_simuladores
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.server.rule=Host(`${APP_HOST}`)"
-      - "traefik.http.services.server.loadbalancer.server.port=3000"
-      - "traefik.http.routers.server.entrypoints=websecure"
-      - "traefik.http.routers.server.tls=true"
-  
-  wordpress:
-    image: wordpress:php8.5
-    restart: always
-    environment:
-      WORDPRESS_DB_HOST: db
-      WORDPRESS_DB_USER: ${WORDPRESS_USER}
-      WORDPRESS_DB_PASSWORD: ${WORDPRESS_PASSWORD}
-      WORDPRESS_DB_NAME: ${WORDPRESS_DB}
-    depends_on:
-      db:
-        condition: service_healthy
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.wordpress.rule=Host(`${WORDPRESS_HOST}`)"
-      - "traefik.http.routers.wordpress.entrypoints=websecure"
-      - "traefik.http.routers.wordpress.tls=true"
-      - "traefik.http.services.wordpress.loadbalancer.server.port=80"
 
 volumes:
   mariadb_data:
