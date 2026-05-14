@@ -21,7 +21,7 @@ router.post("/fazerLogin", validateLogin, async (req, res) => {
             return res.status(400).json({ message: "Email and password are required!" });
         }
 
-        const [managerQuery] = await dbPool.execute(
+        const managerQuery = await dbPool.query(
             "SELECT id, name, password_hash FROM managers WHERE email = ?",
             [login.email]
         );

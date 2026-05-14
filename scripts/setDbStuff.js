@@ -2,7 +2,7 @@ const dbPool = require('../dbConnection');
 const bcrypt = require('bcrypt');
 
 async function setGodUser() {
-  await dbPool.execute(`
+  await dbPool.query(`
     CREATE TABLE IF NOT EXISTS managers (
       id INT AUTO_INCREMENT PRIMARY KEY,
       name VARCHAR(255) NOT NULL,
@@ -11,7 +11,7 @@ async function setGodUser() {
     )
   `);
 
-  const [rows] = await dbPool.execute(
+  const rows = await dbPool.query(
     'SELECT COUNT(*) as total FROM managers WHERE email = ?',
     [process.env.EMAIL_GOD]
   );
@@ -21,7 +21,7 @@ async function setGodUser() {
     const senha = process.env.SENHA_GOD;
     const senhaHash = await bcrypt.hash(senha, 12);
 
-    await dbPool.execute(`
+    await dbPool.query(`
       INSERT INTO managers (name, email, password_hash)
       VALUES (?, ?, ?)
     `, ['goduser', process.env.EMAIL_GOD, senhaHash]);
@@ -29,7 +29,7 @@ async function setGodUser() {
 }
 
 async function setSimulatorsTable() {
-  await dbPool.execute(`
+  await dbPool.query(`
     CREATE TABLE IF NOT EXISTS simulators (
       id INT AUTO_INCREMENT PRIMARY KEY,
       name VARCHAR(255) NOT NULL,

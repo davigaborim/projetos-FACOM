@@ -29,7 +29,7 @@ router.post("/", authJWT, (req, res) => {
             const manualPath = req.files.manual ? req.files.manual[0].filename : null;
             const articlesPaths = (req.files.articles || []).map(f => f.filename);
 
-            await dbPool.execute(
+            await dbPool.query(
                 `INSERT INTO simulators (name, description, repo_link, images, manual, articles)
                  VALUES (?, ?, ?, ?, ?, ?)`,
                 [name, description, repo_link, JSON.stringify(imagePaths), manualPath, JSON.stringify(articlesPaths)]

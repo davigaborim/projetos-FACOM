@@ -18,7 +18,7 @@ router.get("/simuladores/:id/artigos", async (req, res) => {
     try {
         const { id } = req.params;
 
-        const [result] = await dbPool.execute(
+        const result = await dbPool.query(
             `SELECT id, name, manual, articles
              FROM simulators
              WHERE id = ?`,

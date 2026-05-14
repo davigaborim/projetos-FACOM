@@ -16,7 +16,7 @@ router.post("/cadastrarAdm", validateManager, async (req, res) => {
         //criptografar senha
         const hash = await bcrypt.hash(manager.password, 12);
 
-        await dbPool.execute(
+        await dbPool.query(
             "INSERT INTO managers (name, email, password_hash) VALUES (?, ?, ?)",
             [manager.name, manager.email, hash]
         );

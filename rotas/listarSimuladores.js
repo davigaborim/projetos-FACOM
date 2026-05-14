@@ -16,7 +16,7 @@ function parseIfJson(value) {
 
 router.get("/listarSimuladores", async (req, res) => {
     try {
-        const [result] = await dbPool.execute(
+        const result = await dbPool.query(
             `SELECT id, name, description, repo_link, images, manual, articles
              FROM simulators 
              ORDER BY name ASC`

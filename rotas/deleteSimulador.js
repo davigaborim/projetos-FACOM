@@ -8,7 +8,7 @@ router.delete("/:id", async (req, res) => {
     const { id } = req.params;
 
     try {
-        const [result] = await dbPool.execute(
+        const result = await dbPool.query(
             "SELECT images, manual, articles FROM simulators WHERE id = ?",
             [id]
         );
@@ -17,8 +17,8 @@ router.delete("/:id", async (req, res) => {
             return res.status(404).json({ message: "Simulator not found." });
         }
 
-        const images = JSON.parse(result[0].images || "[]");
-        const articles = JSON.parse(result[0].articles || "[]");
+        const images = Array.isArray(result[0].images) ? result[0].images : JSON.parse(result[0].images || "[]");
+        const articles = Array.isArray(result[0].articles) ? result[0].articles : JSON.parse(result[0].articles || "[]");
         const manual = result[0].manual;
 
         const basePath = path.join(__dirname, "..", "arquivos_simuladores");
@@ -44,7 +44,7 @@ router.delete("/:id", async (req, res) => {
             });
         }
 
-        await dbPool.execute("DELETE FROM simulators WHERE id = ?", [id]);
+        await dbPool.query("DELETE FROM simulators WHERE id = ?", [id]);
 
         res.status(200).json({ message: "Simulator deleted successfully!" });
 

@@ -11,7 +11,7 @@ router.put("/:id", (req, res) => {
         { name: "manual", maxCount: 1 },
         { name: "articles", maxCount: 15 }
     ])(req, res, async (err) => {
-        if (err){
+        if (err) {
             return res.status(400).json({ message: err.message });
         }
 
@@ -20,7 +20,7 @@ router.put("/:id", (req, res) => {
         try {
             const { name, description, repo_link, keepOldImages, keepOldArticles } = req.body;
 
-            const [result] = await dbPool.execute(
+            const result = await dbPool.query(
                 "SELECT * FROM simulators WHERE id = ?",
                 [simuladorId]
             );
@@ -31,10 +31,10 @@ router.put("/:id", (req, res) => {
 
             const atual = {
                 ...result[0],
-                images:   JSON.parse(result[0].images   || "[]"),
-                articles: JSON.parse(result[0].articles || "[]")
+                images: Array.isArray(result[0].images) ? result[0].images : JSON.parse(result[0].images || "[]"),
+                articles: Array.isArray(result[0].articles) ? result[0].articles : JSON.parse(result[0].articles || "[]")
             };
-
+            
             const basePath = path.join(__dirname, "..", "arquivos_simuladores");
             let imagensFinais = [];
             let artigosFinais = [];
@@ -79,7 +79,7 @@ router.put("/:id", (req, res) => {
 
             const repoFinal = repo_link !== undefined ? (repo_link.trim() === "" ? null : repo_link.trim()) : atual.repo_link;
 
-            await dbPool.execute(
+            await dbPool.query(
                 `UPDATE simulators
                  SET name = ?,
                      description = ?,
