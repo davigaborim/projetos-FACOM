@@ -36,11 +36,11 @@ router.get("/listarSimuladores", async (req, res) => {
 
     } catch (err) {
         if (process.env.NODE_ENV !== "production") {
-            console.error("Erro ao buscar simuladores:", err);
+            console.error("Error fetching simulators:", err);
         }
         res.status(500).json({
             success: false,
-            message: "Erro ao buscar simuladores"
+            message: "Error fetching simulators"
         });
     }
 });

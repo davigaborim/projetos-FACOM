@@ -22,7 +22,7 @@ router.post("/cadastrarAdm", validateManager, async (req, res) => {
         );
 
         return res.status(CREATED).json({
-            message: "Administrador cadastrado com sucesso!",
+            message: "Administrator registered successfully!",
             admin: {
                 name: manager.name,
                 email: manager.email
@@ -32,15 +32,15 @@ router.post("/cadastrarAdm", validateManager, async (req, res) => {
     } catch (err) {
         if (err.code === "ER_DUP_ENTRY") {
             return res.status(CONFLICT).json({
-                message: "Este email já está cadastrado."
+                message: "This email is already registered."
             });
         }
 
         if (process.env.NODE_ENV !== "production") {
-            console.error("Erro na rota /cadastrarAdm", err);
+            console.error("Error in route /cadastrarAdm", err);
         }
 
-        res.status(SERVER_ERR).send("Erro ao cadastrar administrador.");
+        res.status(SERVER_ERR).send("Error registering administrator.");
     }
 });
 

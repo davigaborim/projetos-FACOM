@@ -26,7 +26,7 @@ router.put("/:id", (req, res) => {
             );
 
             if (result.length === 0) {
-                return res.status(404).json({ message: "Simulador não encontrado." });
+                return res.status(404).json({ message: "Simulator not found." });
             }
 
             const atual = {
@@ -99,13 +99,13 @@ router.put("/:id", (req, res) => {
                 ]
             );
 
-            return res.json({ message: "Simulador atualizado com sucesso!" });
+            return res.json({ message: "Simulator updated successfully!" });
 
         } catch (err) {
             if (process.env.NODE_ENV !== "production") {
                 console.error(err);
             }
-            return res.status(500).json({ message: "Erro interno no servidor." });
+            return res.status(500).json({ message: "Internal server error." });
         }
     });
 });

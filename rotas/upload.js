@@ -18,11 +18,11 @@ router.post("/", authJWT, (req, res) => {
             const { name, description, repo_link, no_link } = req.body;
             
             if (!name || !description) {
-                return res.status(400).json({ message: "Dados incompletos!" });
+                return res.status(400).json({ message: "Incomplete data!" });
             }
 
             if (no_link !== "true" && (!repo_link || repo_link.trim() === "")) {
-                return res.status(400).json({ message: "Informe o link do repositório ou marque que não possui." });
+                return res.status(400).json({ message: "Please provide the repository link or mark that it doesn't exist." });
             }
 
             const imagePaths = (req.files.images || []).map(f => f.filename);
@@ -35,12 +35,12 @@ router.post("/", authJWT, (req, res) => {
                 [name, description, repo_link, JSON.stringify(imagePaths), manualPath, JSON.stringify(articlesPaths)]
             );
 
-            res.status(201).json({ message: "Simulador cadastrado com sucesso!" });
+            res.status(201).json({ message: "Simulator registered successfully!" });
         } catch (err) {
             if(process.env.NODE_ENV !== "production"){
                 console.error(err);
             }
-            res.status(500).json({ message: "Erro interno no servidor." });
+            res.status(500).json({ message: "Internal server error." });
         }
     });
 });

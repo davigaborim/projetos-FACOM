@@ -44,11 +44,11 @@ router.get("/simuladores/:id/artigos", async (req, res) => {
 
     } catch (err) {
         if(process.env.NODE_ENV !== "production"){
-            console.error("Erro ao buscar materiais de apoio:", err);
+            console.error("Error fetching support materials:", err);
         }
         res.status(500).json({
             success: false,
-            message: "Erro ao buscar pateriais de apoio"
+            message: "Error fetching support materials"
         });
     }
 });
