@@ -4,9 +4,9 @@ services:
     image: mariadb:11
     restart: always
     environment:
-      MYSQL_DATABASE: ${MARIA_DB}
-      MYSQL_USER: ${MARIA_USER}
-      MYSQL_PASSWORD: ${MARIA_PASSWORD}
+      MARIADB_DATABASE: ${MARIA_DB}
+      MARIADB_USER: ${MARIA_USER}
+      MARIADB_PASSWORD: ${MARIA_PASSWORD}
       MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: "yes"
     volumes:
       - mariadb_data:/var/lib/mysql
