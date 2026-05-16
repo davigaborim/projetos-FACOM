@@ -437,6 +437,8 @@ body {
     background-color: rgba(255,255,255,0.2);
 }
 
+.form-input:disabled { opacity: 1; }
+
 .form-textarea { resize: vertical; min-height: 120px; }
 
 .file-input-wrapper {
