@@ -22,11 +22,9 @@ class Login {
     }
 
     validatePassword() {
-        const TestPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{6,100}$/;
+        const TestPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{10,100}$/;
         if (this.password === "") {
-            this.setError("O campo de senha não foi preenchido");
-        } else if (!TestPassword.test(this.password)) {
-            this.setError("Invalid password format!");
+            this.setError("The password was not entered!");
         }
     }
 
@@ -51,19 +49,23 @@ class User extends Login {
         const TestName = /^[A-Za-zÀ-ÖØ-öø-ÿ\s]+$/;
 
         if (!this.name) {
-            this.setError("O nome não pode ser vazio!");
+            this.setError("The name was not entered!");
         } else if (!TestName.test(this.name)) {
-            this.setError("O nome deve conter apenas letras e espaços!");
+            this.setError("The name must contain only letters!");
         }
     }
 
     validatePassword() {
-        super.validatePassword();
-
+       const TestPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{10,100}$/;
+        if (this.password === "") {
+            this.setError("The password was not entered!");
+        } else if (!TestPassword.test(this.password)) {
+            this.setError("Invalid password format!");
+        }
         if (this.status !== DEFAULT_MESSAGE) return;
 
         if (this.password !== this.passwordRepeat) {
-            this.setError("As senhas não são iguais!");
+            this.setError("Passwords do not match!");
         }
     }
 
