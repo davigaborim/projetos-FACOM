@@ -65,7 +65,7 @@
                 <div class="requirements-box">
                     <strong>Password requirements:</strong>
                     <ul>
-                        <li>Between 6 and 10 characters</li>
+                        <li>Minimum 10 characters</li>
                         <li>At least one uppercase letter</li>
                         <li>At least one lowercase letter</li>
                         <li>At least one number</li>
@@ -171,9 +171,9 @@
                 return;
             }
 
-            if (password.length < 6) {
+            if (password.length < 10) {
                 mensagem.className = "alert-box alert-error";
-                mensagem.textContent = "Password must be at least 6 characters!";
+                mensagem.textContent = "Password must be at least 10 characters!";
                 mensagem.style.display = "block";
                 return;
             }
