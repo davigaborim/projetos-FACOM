@@ -11,6 +11,11 @@ async function setGodUser() {
     )
   `);
 
+  if (!process.env.EMAIL_GOD || !process.env.SENHA_GOD) {
+    console.log("EMAIL_GOD or SENHA_GOD not defined, skipping admin user creation.");
+    return;
+  }
+
   const rows = await dbPool.query(
     'SELECT COUNT(*) as total FROM managers WHERE email = ?',
     [process.env.EMAIL_GOD]
@@ -45,8 +50,8 @@ async function setSimulatorsTable() {
 }
 
 async function setupDatabase() {
-    await setGodUser();
-    await setSimulatorsTable();
+  await setSimulatorsTable();
+  await setGodUser();
 }
 
 module.exports = { setupDatabase };
